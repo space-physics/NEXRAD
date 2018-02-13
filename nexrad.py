@@ -1,10 +1,13 @@
 #!/usr/bin/env python
+"""parallel file downloading for Python 3"""
 import urllib.request
 from datetime import datetime, timedelta
 from dateutil.parser import parse
 from pathlib import Path
+import concurrent.futures
 #
-base = 'https://mesonet.agron.iastate.edu/archive/data/'
+#https://mesonet.agron.iastate.edu/archive/data/2018/02/12/GIS/uscomp/n0q_201802120000.png
+BASE = 'https://mesonet.agron.iastate.edu/archive/data/'
 DT = timedelta(minutes=5)  # time resolution of NEXRAD composite data since 1995
 
 
@@ -12,19 +15,18 @@ def datetimerange(start:datetime, stop:datetime, step:timedelta) -> list:
     return [start + i*step for i in range((stop-start) // step)]
 
 
-def get_composite(start:datetime, stop: datetime, outdir:Path):
-    tlist = datetimerange(start,stop,DT)
+def get_file(t:datetime, outdir:Path):
+    """download NEXRAD file for this time"""
+    fn = outdir/f"nexrad{t.isoformat()}.png"
 
-    print('downloading',len(tlist),'files to',outdir)
-    for t in tlist:
-        url = base + f'{t.year}/{t.month:02d}/{t.day:02d}/GIS/uscomp/n0q_{t.year}{t.month:02d}{t.day:02d}{t.hour:02d}{t.minute:02d}.png'
-        fn = outdir/f"nexrad{t.isoformat()}.png"
-        print(fn,end='\r')
-        urllib.request.urlretrieve(url, fn)
+    if fn.is_file(): # no clobber
+        return
 
+    url = BASE + f'{t.year}/{t.month:02d}/{t.day:02d}/GIS/uscomp/n0q_{t.year}{t.month:02d}{t.day:02d}{t.hour:02d}{t.minute:02d}.png'
 
-#https://mesonet.agron.iastate.edu/archive/data/2018/02/12/GIS/uscomp/n0q_201802120000.png
-#https://mesonet.agron.iastate.edu/archive/data/2017/08/19/GIS/uscomp/n0q_2017081900.png
+    print(fn,end='\r')
+    urllib.request.urlretrieve(url, fn)
+
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -37,4 +39,9 @@ if __name__ == '__main__':
     outdir = Path(p.outdir).expanduser()
     outdir.mkdir(parents=True,exist_ok=True)
 
-    get_composite(parse(p.start), parse(p.stop), outdir)
+    tlist = datetimerange(parse(p.start), parse(p.stop), DT)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as exe:
+        future_file = {exe.submit(get_file, t, outdir): t for t in tlist}
+        for f in concurrent.futures.as_completed(future_file):
+            t = future_file[f]
