@@ -1,3 +1,10 @@
+.. image:: https://travis-ci.org/scivision/nexrad-quick-plot.svg?branch=master
+    :target: https://travis-ci.org/scivision/nexrad-quick-plot
+    
+.. image:: https://coveralls.io/repos/github/scivision/nexrad-quick-plot/badge.svg?branch=master
+    :target: https://coveralls.io/github/scivision/nexrad-quick-plot?branch=master
+
+
 ===================
 Nexrad Quick-plot
 ===================
