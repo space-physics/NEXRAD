@@ -1,7 +1,7 @@
 ===================
 Nexrad-quick-plot
 ===================
-Quick Python script to download and plot NEXRAD compositive reflectivity PNGs by date/time
+Easy Python download and plot NEXRAD compositive reflectivity  and GOES PNGs by date/time
 
 Install
 =======
@@ -11,22 +11,47 @@ Install
 
 Usage
 =====
+Currently, this program is for NEXRAD and GOES.
 
-1. Gets `NEXRAD data <http://mesonet.agron.iastate.edu/docs/nexrad_composites/>`_ with clean Python3 multithreading::
+NEXRAD
+------
+
+1. Get `NEXRAD reflectivity data <http://mesonet.agron.iastate.edu/docs/nexrad_composites/>`_ with parallel download::
 
         python download-nexrad.py start stop outdir
 
-   for example, to download from 2018-02-01 to 2018-02-05 to ``~/data/nexrad``::
+   example: download from 2018-01-01 to 2018-01-02 to ``~/data/nexrad``::
 
-        python download-nexrad.py 2018-02-01T00 2018-02-06T00 ~/data/nexrad
+        python download-nexrad.py 2018-01-01T00 2018-01-03T00 ~/data/nexrad
 
-2. Plot data georegistered via Cartopy::
+2. Plot NEXRAD reflectivity data georegistered via Cartopy::
 
         python plot-nexrad.py ~/data/nexrad/
 
    Plot a specific file::
 
-        python plot-nexrad.py ~/data/nexrad/2018-02-06T12:35:00.png
+        python plot-nexrad.py ~/data/nexrad/2018-01-01T12:35:00.png
+
+
+GOES
+----
+
+1. Get `GOES data <http://mesonet.agron.iastate.edu/docs/nexrad_composites/>`_ with parallel download::
+
+        python download-goes.py goesnum start stop outdir
+
+   example: download IR from GOES-13 2018-01-01 to 2018-01-02 to ``~/data/goes13``::
+
+        python download-goes.py 13 IR 2018-01-01T00 2018-01-03T00 ~/data/goes13
+
+2. Plot GOES IR data georegistered via Cartopy::
+
+        python plot-goes.py ~/data/goes13
+
+   Plot a specific file::
+
+        python plot-goes.py ~/data/nexrad/2018-01-01T12:35:00.png
+
 
 
 Coordinates
