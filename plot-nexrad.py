@@ -60,7 +60,7 @@ def plotnexrad(img, fn:Path, lat:list, lon:list):
         ax.plot(l[0], l[1], 'bo', markersize=7, transform=GREF)
         ax.annotate(l[2], xy = (l[0], l[1]), xytext = (3, 3), textcoords = 'offset points')
 
-    ax.imshow(img,
+    ax.imshow(img,origin='upper',
           extent=[lon[0],lon[-1],lat[0],lat[-1]],
           transform=GREF)
 

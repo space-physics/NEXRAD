@@ -24,6 +24,10 @@ Usage
 
         python plot-nexrad.py ~/data/nexrad/
 
+   Plot a specific file::
+
+        python plot-nexrad.py ~/data/nexrad/2018-02-06T12:35:00.png
+
 
 Coordinates
 ===========
