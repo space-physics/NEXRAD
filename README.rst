@@ -7,18 +7,17 @@ Quick Python script to download and plot NEXRAD compositive reflectivity PNGs by
 Usage
 =====
 
-1. Gets
-`NEXRAD data <http://mesonet.agron.iastate.edu/docs/nexrad_composites/>`_
-with clean Python3 multithreading::
+1. Gets `NEXRAD data <http://mesonet.agron.iastate.edu/docs/nexrad_composites/>`_ with clean Python3 multithreading::
    
         python download-nexrad.py start stop outdir
    
    for example, to download from 2018-02-01 to 2018-02-05 to ``~/data/nexrad``::
    
         python download-nexrad.py 2018-02-01T00 2018-02-06T00 ~/data/nexrad
+
 2. Plot data georegistered via Cartopy::
 
-        python plot-nexrad.py ~/data/nexrad/*.png
+        python plot-nexrad.py ~/data/nexrad/
         
         
 Coordinates
