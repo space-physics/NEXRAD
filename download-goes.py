@@ -26,11 +26,8 @@ if __name__ == '__main__':
     tgoes = datetimerange(start, stop, timedelta(hours=3))
     print('downloading',len(tgoes),'files to',outdir)
 
-    for t in tgoes:
-        get_goes(t,outdir,p.goessat,p.goesmode)
 
-    if 0:
-      with concurrent.futures.ThreadPoolExecutor(max_workers=5) as exe:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as exe:
         future_file = {exe.submit(get_goes, t, outdir, p.goessat, p.goesmode): t for t in tgoes}
         for f in concurrent.futures.as_completed(future_file):
             t = future_file[f]

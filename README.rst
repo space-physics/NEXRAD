@@ -16,7 +16,7 @@ Currently, this program is for NEXRAD and GOES.
 NEXRAD
 ------
 
-1. Get `NEXRAD reflectivity data <http://mesonet.agron.iastate.edu/docs/nexrad_composites/>`_ with parallel download::
+1. Get `NEXRAD reflectivity data <https://mesonet.agron.iastate.edu/docs/nexrad_composites/>`_ with parallel download::
 
         python download-nexrad.py start stop outdir
 
@@ -36,7 +36,7 @@ NEXRAD
 GOES
 ----
 
-1. Get `GOES data <http://mesonet.agron.iastate.edu/docs/nexrad_composites/>`_ with parallel download::
+1. Get `GOES data <hhttps://www.ncdc.noaa.gov/gibbs//>`_ with parallel download::
 
         python download-goes.py goesnum start stop outdir
 

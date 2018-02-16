@@ -23,8 +23,7 @@ if __name__ == '__main__':
     tnexrad = datetimerange(start, stop, timedelta(minutes=5))
     print('downloading',len(tnexrad),'files to',outdir)
 
-    if not p.goes:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as exe:
-            future_file = {exe.submit(get_nexrad, t, outdir): t for t in tnexrad}
-            for f in concurrent.futures.as_completed(future_file):
-                t = future_file[f]
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as exe:
+        future_file = {exe.submit(get_nexrad, t, outdir): t for t in tnexrad}
+        for f in concurrent.futures.as_completed(future_file):
+            t = future_file[f]
