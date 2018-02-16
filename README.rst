@@ -1,5 +1,5 @@
 ===================
-Nexrad-quick-plot
+Nexrad Quick-plot
 ===================
 Easy Python download and plot NEXRAD compositive reflectivity  and GOES PNGs by date/time
 

@@ -27,3 +27,5 @@ if __name__ == '__main__':
         future_file = {exe.submit(get_nexrad, t, outdir): t for t in tnexrad}
         for f in concurrent.futures.as_completed(future_file):
             t = future_file[f]
+
+    print()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-install_requires = ['numpy','imageio','scikit-image']
+install_requires = ['python-dateutil','numpy','imageio','scikit-image']
 tests_require = ['nose','coveralls']
 # %%
 from setuptools import setup,find_packages
@@ -12,7 +12,8 @@ setup(name='NEXRAD_quickplot',
       description='easily download and plot NEXRAD weather radar reflectivity data',
       install_requires=install_requires,
       tests_require=tests_require,
-      extras_require={'tests':tests_require},
+      extras_require={'tests':tests_require,
+                      'plots':['cartopy','matplotlib'],},
       python_requires='>=3.6',
 	  )
 
