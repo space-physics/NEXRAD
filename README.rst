@@ -8,7 +8,8 @@
 ===================
 Nexrad Quick-plot
 ===================
-Easy Python download and plot NEXRAD compositive reflectivity  and GOES PNGs by date/time
+Easy Python download and plot NEXRAD compositive reflectivity.
+GOES weather satellite moved to its `own repo <https://github.com/scivision/goes-quickplot>`_.
 
 Install
 =======
@@ -18,10 +19,7 @@ Install
 
 Usage
 =====
-Currently, this program is for NEXRAD and GOES.
 
-NEXRAD
-------
 
 1. Get `NEXRAD reflectivity data <https://mesonet.agron.iastate.edu/docs/nexrad_composites/>`_ with parallel download::
 
@@ -39,25 +37,6 @@ NEXRAD
 
         python plot-nexrad.py ~/data/nexrad/2018-01-01T12:35:00.png
 
-
-GOES
-----
-
-1. Get `GOES data <hhttps://www.ncdc.noaa.gov/gibbs//>`_ with parallel download::
-
-        python download-goes.py goesnum start stop outdir
-
-   example: download IR from GOES-13 2018-01-01 to 2018-01-02 to ``~/data/goes13``::
-
-        python download-goes.py 13 IR 2018-01-01T00 2018-01-03T00 ~/data/goes13
-
-2. Plot GOES IR data georegistered via Cartopy::
-
-        python plot-goes.py ~/data/goes13
-
-   Plot a specific file::
-
-        python plot-goes.py ~/data/nexrad/2018-01-01T12:35:00.png
 
 
 
