@@ -50,6 +50,8 @@ def loadnexrad(fn:Path, downsample:int=None):
 
     img = imageio.imread(str(fn))
 
+    assert img.ndim==3 and img.shape[2] == 4,'unexpected NEXRAD image format'
+
     if downsample is not None:
         img = skimage.transform.resize(img, (img.shape[0]//downsample, img.shape[1]//downsample),
                                    mode='constant',cval=255,
