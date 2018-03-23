@@ -23,9 +23,10 @@ if __name__ == '__main__':
     if p.keo is not None:
         nqp.keogram(flist, p.keo, p.wld)
         show()
+    else:
 # %% loop over all files
-    for f in flist:
-        img = nq.load(f, p.wld)
-        nqp.overlay2d(img)
+        for f in flist:
+            img = nq.load(f, p.wld)
+            nqp.overlay2d(img)
 
-        show()
+            show()
