@@ -72,10 +72,9 @@ def keogram(flist:list, llslice:tuple, wld:Path):
             keo.loc[:,img.time,:] = img.sel(lon=ilon, method='nearest', tolerance=0.1)
 # %%
     ax = figure(figsize=(15,10)).gca()
-
-    ax.imshow(img,origin='upper',
-              extent=[*np.datetime_as_string(keo.time[[0,-1]]),
-                      keo.lon[0], keo.lon[-1]])
+    #tlim = mdates.date2num([parse(t) for t in np.datetime_as_string(keo.time[[0,-1]])])
+    ax.imshow(img,origin='upper')
+              #extent=[tlim[0],tlim[1], keo.lon[0].item(), keo.lon[-1].item()])
     ax.set_xlabel('Time [UTC]')
     ax.set_ylabel('Longitude [deg.]')
 
