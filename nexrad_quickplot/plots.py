@@ -1,4 +1,4 @@
-from pathlib import Path
+import xarray
 from matplotlib.pyplot import figure
 import cartopy
 #from metpy.plots import ctables
@@ -12,13 +12,13 @@ import cartopy
 # WGS84 is the default, just calling it out explicity so somene doesn't wonder.
 GREF = cartopy.crs.PlateCarree()#globe=cartopy.crs.Globe(ellipse='WGS84')
 
-def plotnexrad(img, fn:Path, lat:list, lon:list):
+def overlay2d(img:xarray.DataArray):
     """plot NEXRAD reflectivity on map coordinates"""
     #hsv = rgb_to_hsv(d)
 
     ax = figure(figsize=(15,10)).gca(projection=GREF)
 
-    ax.set_title(fn.name)
+    ax.set_title(img.filename.name)
 
     ax.add_feature(cartopy.feature.COASTLINE, linewidth=0.5, linestyle=':')
     ax.add_feature(cartopy.feature.NaturalEarthFeature('cultural', 'admin_1_states_provinces',
@@ -39,5 +39,11 @@ def plotnexrad(img, fn:Path, lat:list, lon:list):
         ax.annotate(l[2], xy = (l[0], l[1]), xytext = (3, 3), textcoords = 'offset points')
 
     ax.imshow(img,origin='upper',
-          extent=[lon[0],lon[-1],lat[0],lat[-1]],
+          extent=[img.lon[0], img.lon[-1], img.lat[0],img.lat[-1]],
           transform=GREF)
+
+
+def keogram(img:xarray.DataArray):
+
+    ax = figure(figsize=(15,10)).gca()
+
