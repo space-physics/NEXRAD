@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from pathlib import Path
 from datetime import datetime,timedelta
+from dateutil.parser import parse
 import urllib.request
 import numpy as np
 import xarray
@@ -76,6 +77,7 @@ def load(fn:Path, wld:Path, downsample:int=None) -> xarray.DataArray:
 
     img = xarray.DataArray(img,
                            coords=[('lat',lat),('lon',lon),('color',['R','G','B'])],
-                           attrs={'filename':fn, 'wldfn':wld})
+                           attrs={'filename':fn, 'wldfn':wld, 'time':parse(fn.stem[6:])})
 
     return img
+

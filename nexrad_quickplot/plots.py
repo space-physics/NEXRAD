@@ -1,14 +1,10 @@
+from pathlib import Path
 import xarray
 from matplotlib.pyplot import figure
 import cartopy
-#from metpy.plots import ctables
-
-#def extract_colormap():
-#    norm, cmap = ctables.registry.get_with_steps('NWSReflectivity', -75, 0.5)
-#    rgb = cmap(np.arange(16))
-
-#    return rgb
-
+import numpy as np
+from dateutil.parser import parse
+from . import load
 # WGS84 is the default, just calling it out explicity so somene doesn't wonder.
 GREF = cartopy.crs.PlateCarree()#globe=cartopy.crs.Globe(ellipse='WGS84')
 
@@ -43,7 +39,37 @@ def overlay2d(img:xarray.DataArray):
           transform=GREF)
 
 
-def keogram(img:xarray.DataArray):
+def keogram(flist:list, llslice:tuple, wld:Path):
+    """ load all images from flist and stack a single lat or lon index"""
+# %% generate slices
+    try:
+        ilat = float(llslice[0])
+    except TypeError:
+        ilat = None
+    try:
+        ilon = slice(float(llslice[1]))
+    except ValueError:
+        ilon = None
 
+    if ilat is None and ilon is None:
+        raise ValueError('must slice in lat or lon')
+# %% setup arrays
+    img = load(flist[0], wld)
+    coords = ('lat',img.lat) if ilon is not None else ('lon',img.lon)
+    time = [parse(f.stem[6:]) for f in flist]
+
+    keo = xarray.DataArray(np.empty((img.lon.size, len(flist), img.color.size)),
+                           coords=(coords,('time', time), ('color',img.color)))
+# %% load and stack slices
+    for f in flist:
+        print(f,end='\r')
+        img = load(f,wld)
+        if ilat is not None:
+            keo.loc[:,img.time,:] = img.sel(lat=ilat, method='nearest', tolerance=0.1)
+        elif ilon is not None:
+            keo.loc[:,img.time,:] = img.sel(lon=ilon, method='nearest', tolerance=0.1)
+# %%
     ax = figure(figsize=(15,10)).gca()
+
+    keo.plot(ax=ax)
 
