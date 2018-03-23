@@ -71,5 +71,8 @@ def keogram(flist:list, llslice:tuple, wld:Path):
 # %%
     ax = figure(figsize=(15,10)).gca()
 
-    keo.plot(ax=ax)
+    ax.imshow(img,origin='upper',
+              extent=[keo.time[0], keo.time[-1], keo.lon[0], keo.lon[-1]])
+    ax.set_xlabel('Time [UTC]')
+    ax.set_ylabel('Longitude [deg.]')
 
