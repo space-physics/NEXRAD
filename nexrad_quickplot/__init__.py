@@ -19,10 +19,14 @@ def wld2mesh(fn:Path, nxy:tuple) -> np.ndarray:
     """
     wld = np.loadtxt(fn)
 
-    ny, nx = nxy
+    #ny, nx = nxy
+    ny, nx =(5400,12200)  # FIXME has to be from original image size
 
-    lat = np.arange(wld[5]-wld[3] + ny*wld[3], wld[5]-wld[3], -wld[3])
-    lon = np.arange(wld[4], wld[4]+nx*wld[0], wld[0])
+    lat = np.linspace(wld[5] + ny*wld[3], wld[5], nxy[0])
+    lon = np.linspace(wld[4], wld[4]+nx*wld[0], nxy[1])
+    # trailing index fixes occasional off by one due to floating point error
+   # lat = np.arange(wld[5]-wld[3] + ny*wld[3], wld[5]-wld[3], -wld[3])[:ny]
+    #lon = np.arange(wld[4], wld[4]+nx*wld[0], wld[0])[:nx]
 
     return lat, lon
 
@@ -50,14 +54,14 @@ def download(t:datetime, outdir:Path):
     urllib.request.urlretrieve(url, fn)
 
 
-def load(fn:Path, wld:Path, downsample:int=None) -> xarray.DataArray:
+def load(fn:Path, wld:Path, downsample:int=None, keo:bool=False) -> xarray.DataArray:
     """
     loads and modifies NEXRAD image for plotting
     """
 
     img = imageio.imread(fn)
 
-    assert img.ndim==3 and img.shape[2] == 4,'unexpected NEXRAD image format'
+    assert img.ndim==3 and img.shape[2] in (3, 4),'unexpected NEXRAD image format'
 
     if downsample is not None:
         if st is None:
@@ -67,10 +71,11 @@ def load(fn:Path, wld:Path, downsample:int=None) -> xarray.DataArray:
                                     preserve_range=True).astype(img.dtype)
 
 # %% make transparent
-    img = img[...,:3]
+    if not keo:
+        img = img[...,:3]
 
-    mask = img[...,:3].all(axis=2) == 0
-    img[mask,:3] = 255  # make no signal be white
+        mask = img[...,:3].all(axis=2) == 0
+        img[mask,:3] = 255  # make no signal be white
 
 # %% collect output
     lat, lon = wld2mesh(wld, img.shape[:2])
@@ -78,6 +83,8 @@ def load(fn:Path, wld:Path, downsample:int=None) -> xarray.DataArray:
     img = xarray.DataArray(img,
                            coords=[('lat',lat),('lon',lon),('color',['R','G','B'])],
                            attrs={'filename':fn, 'wldfn':wld, 'time':parse(fn.stem[6:])})
+
+    assert img.dtype in (np.uint8,np.uint16)
 
     return img
 

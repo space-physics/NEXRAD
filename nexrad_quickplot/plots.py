@@ -56,16 +56,16 @@ def keogram(flist:list, llslice:tuple, wld:Path):
     if ilat is None and ilon is None:
         raise ValueError('must slice in lat or lon')
 # %% setup arrays
-    img = load(flist[0], wld)
+    img = load(flist[0], wld, keo=False)
     coords = ('lat',img.lat) if ilon is not None else ('lon',img.lon)
     time = [parse(f.stem[6:]) for f in flist]
 
-    keo = xarray.DataArray(np.empty((img.lon.size, len(flist), img.color.size)),
+    keo = xarray.DataArray(np.empty((img.lon.size, len(flist), img.color.size),dtype=img.dtype),
                            coords=(coords,('time', time), ('color',img.color)))
 # %% load and stack slices
     for f in flist:
         print(f,end='\r')
-        img = load(f,wld)
+        img = load(f,wld, keo=False)
         if ilat is not None:
             keo.loc[:,img.time,:] = img.sel(lat=ilat, method='nearest', tolerance=0.1)
         elif ilon is not None:
@@ -73,8 +73,9 @@ def keogram(flist:list, llslice:tuple, wld:Path):
 # %%
     ax = figure(figsize=(15,10)).gca()
     #tlim = mdates.date2num([parse(t) for t in np.datetime_as_string(keo.time[[0,-1]])])
-    ax.imshow(img,origin='upper')
+    ax.imshow(keo.values,origin='upper')
               #extent=[tlim[0],tlim[1], keo.lon[0].item(), keo.lon[-1].item()])
     ax.set_xlabel('Time [UTC]')
     ax.set_ylabel('Longitude [deg.]')
+    ax.set_title(f'Keogram from lat={ilat}')
 
