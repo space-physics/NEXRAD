@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+"""
+keogram example:
+python plot-nexrad.py ~/data/nexrad2017-08/temp/ --keo 40 none
+
+
+"""
 from pathlib import Path
 from matplotlib.pyplot import show
 #
@@ -11,7 +17,7 @@ if __name__ == '__main__':
     p.add_argument('datadir',help='directory of NEXRAD PNG data to read',nargs='+')
     p.add_argument('-pat',help='file glob pattern',nargs='?', default='*.png')
     p.add_argument('-wld',help='.wld filename',default='n0q.wld')
-    p.add_argument('-k','--keo',help='make keogram at lat,lon  (none for no cut)',nargs=2)
+    p.add_argument('-k','--keo',help='make keogram at lat,lon  (none for no cut)',metavar=('lat','lon'),nargs=2)
     p = p.parse_args()
 # %% find files to plot
     if len(p.datadir) > 1:
