@@ -4,7 +4,7 @@ from matplotlib.pyplot import figure
 import cartopy
 import numpy as np
 from dateutil.parser import parse
-#import matplotlib.dates as mdates
+import matplotlib.dates as mdates
 from . import load
 # WGS84 is the default, just calling it out explicity so somene doesn't wonder.
 GREF = cartopy.crs.PlateCarree()#globe=cartopy.crs.Globe(ellipse='WGS84')
@@ -73,15 +73,16 @@ def keogram(flist:list, llslice:tuple, wld:Path):
     fg = figure(figsize=(15,10))
     ax = fg.gca()
 
-    #tlim = mdates.date2num(keo.time[[0,-1]].values)
-    #tlim = keo.time[[0,-1]].values
-    #tlim = (None,None)
-    tlim = (0,1)
+    tlim = mdates.date2num(keo.time[[0,-1]].values)
 
-    ax.imshow(keo.values,origin='upper', extent=[tlim[0], tlim[1], keo.lon[0].item(), keo.lon[-1].item()])
-              #extent=[tlim[0],tlim[1], keo.lon[0].item(), keo.lon[-1].item()])
+    ax.imshow(keo.values,origin='upper',
+              aspect='auto', # crucial for time-based imshow()
+              extent=[tlim[0], tlim[1], keo.lon[0].item(), keo.lon[-1].item()])
 
+    ax.xaxis_date()
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
     fg.autofmt_xdate()
+
     ax.set_xlabel('Time [UTC]')
     ax.set_ylabel('Longitude [deg.]')
     ax.set_title(f'Keogram from lat={ilat}')
