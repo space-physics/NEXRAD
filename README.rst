@@ -1,6 +1,6 @@
 .. image:: https://travis-ci.org/scivision/nexrad-quick-plot.svg?branch=master
     :target: https://travis-ci.org/scivision/nexrad-quick-plot
-    
+
 .. image:: https://coveralls.io/repos/github/scivision/nexrad-quick-plot/badge.svg?branch=master
     :target: https://coveralls.io/github/scivision/nexrad-quick-plot?branch=master
 
@@ -52,3 +52,27 @@ The `.wld format <https://mesonet.agron.iastate.edu/docs/radmapserver/howto.html
     -0.005 (size of pixel in y direction)
     -126.0 (x coordinate of centre of upper left pixel in map units--here it's WGS84 longitude)
     50.0 (y coordinate of centre of upper left pixel in map units--here it's WGS84 latitude)
+
+
+Notes
+=====
+
+
+Mass image downscaling
+----------------------
+For initial analysis, the original Nexrad image size of 14440 x 5000 pixels may be too high to complete in a reasonable time.
+I choose to downsize by a factor of 10, which takes a long time, but is a one-time process.
+This is done using all CPU cores via GNU Parallel and ImageMagick on Linux or Mac.
+
+.. code: bash
+
+    mkdir orig
+    cp *.png orig
+
+    find . -maxdepth 1 -name "*.png" | nice parallel mogrify -scale 10%
+
+
+GNU Parallel is available via:
+
+* Linux: ``apt install parallel``
+* Mac: ``brew install parallel``
