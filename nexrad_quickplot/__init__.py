@@ -52,7 +52,7 @@ def download(t:datetime, outdir:Path) -> Path:
 
     print(fn, end='\r')
     urllib.request.urlretrieve(url, fn)
-    
+
     return fn
 
 
@@ -66,6 +66,7 @@ def load(fn:Path, wld:Path, downsample:int=None, keo:bool=False) -> xarray.DataA
     assert img.ndim==3 and img.shape[2] in (3, 4),'unexpected NEXRAD image format'
 
     if downsample is not None:
+        assert isinstance(downsample,int)
         if st is None:
             raise ImportError('you need to install scikit-image    pip install skimage')
         img = st.resize(img, (img.shape[0]//downsample, img.shape[1]//downsample),

@@ -14,7 +14,7 @@ setup(name='NEXRAD_quickplot',
       install_requires=install_requires,
       tests_require=tests_require,
       extras_require={'tests':tests_require,
-                      'plots':['cartopy','matplotlib'],},
+                      'plots':['cartopy','matplotlib','seaborn'],},
       python_requires='>=3.6',
       classifiers=[
       'Development Status :: 4 - Beta',

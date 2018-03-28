@@ -1,6 +1,6 @@
 from pathlib import Path
 import xarray
-from matplotlib.pyplot import figure
+from matplotlib.pyplot import figure,draw
 import cartopy
 import numpy as np
 from dateutil.parser import parse
@@ -9,11 +9,16 @@ from . import load
 # WGS84 is the default, just calling it out explicity so somene doesn't wonder.
 GREF = cartopy.crs.PlateCarree()#globe=cartopy.crs.Globe(ellipse='WGS84')
 
-def overlay2d(img:xarray.DataArray):
+def overlay2d(img:xarray.DataArray, ofn:Path=None, fg:figure=None) -> figure:
     """plot NEXRAD reflectivity on map coordinates"""
     #hsv = rgb_to_hsv(d)
 
-    ax = figure(figsize=(15,10)).gca(projection=GREF)
+    if fg is None:
+        fg = figure(figsize=(15,10))
+    else:
+        fg.clf()
+
+    ax = fg.gca(projection=GREF)
 
     ax.set_title(img.filename.name)
 
@@ -39,8 +44,17 @@ def overlay2d(img:xarray.DataArray):
           extent=[img.lon[0], img.lon[-1], img.lat[0],img.lat[-1]],
           transform=GREF)
 
+    draw()
+# %%
+    if ofn is not None:
+        ofn = Path(ofn).expanduser()
+        print('saving Nexrad map:',ofn, end='\r')
+        fg.savefig(ofn,bbox_inches='tight')
 
-def keogram(flist:list, llslice:tuple, wld:Path):
+    return fg
+
+
+def keogram(flist:list, llslice:tuple, wld:Path, ofn:Path=None):
     """ load all images from flist and stack a single lat or lon index"""
 # %% generate slices
     try:
@@ -90,3 +104,9 @@ def keogram(flist:list, llslice:tuple, wld:Path):
     ax.set_ylabel('Longitude [deg.]')
     ax.set_title(f'NEXRAD Keogram: cut at lat={ilat}.  {time[0]} to {time[-1]}')
 
+    draw()
+# %%
+    if ofn is not None:
+        ofn = Path(ofn).expanduser()
+        print('saving keogram to',ofn)
+        fg.savefig(ofn,bbox_inches='tight')
