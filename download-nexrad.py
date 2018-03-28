@@ -4,8 +4,11 @@ from datetime import timedelta
 from dateutil.parser import parse
 from pathlib import Path
 import concurrent.futures
+import itertools
 #
-from nexrad_quickplot import get_nexrad, datetimerange
+import nexrad_quickplot as nq
+
+dtmin = 5
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -20,12 +23,11 @@ if __name__ == '__main__':
 
     start, stop = parse(p.start), parse(p.stop)
 # %% NEXRAD
-    tnexrad = datetimerange(start, stop, timedelta(minutes=5))
+    tnexrad = nq.datetimerange(start, stop, timedelta(minutes=dtmin))
     print('downloading',len(tnexrad),'files to',outdir)
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as exe:
-        future_file = {exe.submit(get_nexrad, t, outdir): t for t in tnexrad}
-        for f in concurrent.futures.as_completed(future_file):
-            t = future_file[f]
-
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        executor.map(nq.download,
+                     tnexrad, itertools.repeat(outdir),
+                     timeout=600)
     print()
