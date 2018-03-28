@@ -60,7 +60,7 @@ Notes
 
 Mass image downscaling
 ----------------------
-For initial analysis, the original Nexrad image size of 14440 x 5000 pixels may be too high to complete in a reasonable time.
+For initial analysis, the original Nexrad image size of 12200 x 5400 pixels may be too high to complete in a reasonable time.
 I choose to downsize by a factor of 10, which takes a long time, but is a one-time process.
 
 .. code:: bash
