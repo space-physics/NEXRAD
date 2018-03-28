@@ -40,10 +40,10 @@ if __name__ == '__main__':
         nqp.keogram(flist, p.keo, p.wld, ofn)
     else:
 # %% loop over all files
-        fg = None
+        mlp = None
         for f in flist:
             ofn = odir / ('map'+f.name[6:]) if odir else None
             img = nq.load(f, p.wld)
-            fg = nqp.overlay2d(img, ofn, fg)
+            mlp = nqp.overlay2d(img, ofn, mlp)
 
     show()

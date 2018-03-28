@@ -1,26 +1,41 @@
 from pathlib import Path
 import xarray
 from matplotlib.pyplot import figure,draw
-import cartopy
+import matplotlib.ticker as mticker
 import numpy as np
 from dateutil.parser import parse
 import matplotlib.dates as mdates
+#
 from . import load
+#
+import cartopy
 # WGS84 is the default, just calling it out explicity so somene doesn't wonder.
 GREF = cartopy.crs.PlateCarree()#globe=cartopy.crs.Globe(ellipse='WGS84')
+from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
-def overlay2d(img:xarray.DataArray, ofn:Path=None, fg:figure=None) -> figure:
+
+def overlay2d(img:xarray.DataArray, ofn:Path=None, mlp:dict=None) -> dict:
     """plot NEXRAD reflectivity on map coordinates"""
-    #hsv = rgb_to_hsv(d)
+    def _savemap(ofn,fg):
+        if ofn is not None:
+            ofn = Path(ofn).expanduser()
+            print('saving Nexrad map:',ofn, end='\r')
+            fg.savefig(ofn,bbox_inches='tight')
 
-    if fg is None:
-        fg = figure(figsize=(15,10))
-    else:
-        fg.clf()
+    if mlp is not None:
+        mlp['himg'].set_data(img)
+        mlp['ht'].set_text(img.filename.name)
+        draw()
+        _savemap(ofn,mlp['fg'])
+        return mlp
+
+
+
+    fg = figure(figsize=(15,10))
 
     ax = fg.gca(projection=GREF)
 
-    ax.set_title(img.filename.name)
+    ht = ax.set_title(img.filename.name)
 
     ax.add_feature(cartopy.feature.COASTLINE, linewidth=0.5, linestyle=':')
     ax.add_feature(cartopy.feature.NaturalEarthFeature('cultural', 'admin_1_states_provinces',
@@ -40,18 +55,26 @@ def overlay2d(img:xarray.DataArray, ofn:Path=None, fg:figure=None) -> figure:
         ax.plot(l[0], l[1], 'bo', markersize=7, transform=GREF)
         ax.annotate(l[2], xy = (l[0], l[1]), xytext = (3, 3), textcoords = 'offset points')
 
-    ax.imshow(img,origin='upper',
-          extent=[img.lon[0], img.lon[-1], img.lat[0],img.lat[-1]],
-          transform=GREF)
+    himg = ax.imshow(img,origin='upper',
+                      extent=[img.lon[0], img.lon[-1], img.lat[0],img.lat[-1]],
+                      transform=GREF)
+# %% grid lines and labels
+    gl = ax.gridlines(crs=GREF, draw_labels=True,
+                  linewidth=1, color='gray', alpha=0.5, linestyle='--')
+    gl.xlabels_top = False
+    gl.ylabels_left = False
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
+    # optional
+    gl.xlocator = mticker.FixedLocator(range(-140,-40,20))
+    gl.ylocator = mticker.FixedLocator(range(20,54,4))
 
     draw()
-# %%
-    if ofn is not None:
-        ofn = Path(ofn).expanduser()
-        print('saving Nexrad map:',ofn, end='\r')
-        fg.savefig(ofn,bbox_inches='tight')
+    _savemap(ofn,fg)
 
-    return fg
+    mlp = {'fg':fg,'himg':himg,'ht':ht}
+
+    return mlp
 
 
 def keogram(flist:list, llslice:tuple, wld:Path, ofn:Path=None):
