@@ -62,17 +62,16 @@ Mass image downscaling
 ----------------------
 For initial analysis, the original Nexrad image size of 14440 x 5000 pixels may be too high to complete in a reasonable time.
 I choose to downsize by a factor of 10, which takes a long time, but is a one-time process.
-This is done using all CPU cores via GNU Parallel and ImageMagick on Linux or Mac.
 
-.. code: bash
+.. code:: bash
 
     mkdir orig
     cp *.png orig
 
-    find . -maxdepth 1 -name "*.png" | nice parallel mogrify -scale 10%
+   nice mogrify -scale 10% "*.png"
 
+If you have trouble with this being very slow, try::
 
-GNU Parallel is available via:
+     MAGICK_TEMPORARY_PATH=/run/shm nice mogrify -scale 10% "*.png"
 
-* Linux: ``apt install parallel``
-* Mac: ``brew install parallel``
+\
