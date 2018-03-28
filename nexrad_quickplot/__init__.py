@@ -35,7 +35,7 @@ def datetimerange(start:datetime, stop:datetime, step:timedelta) -> list:
     return [start + i*step for i in range((stop-start) // step)]
 
 
-def download(t:datetime, outdir:Path):
+def download(t:datetime, outdir:Path) -> Path:
     """download NEXRAD file for this time
     https://mesonet.agron.iastate.edu/archive/data/2018/02/12/GIS/uscomp/n0q_201802120000.png
     """
@@ -52,6 +52,8 @@ def download(t:datetime, outdir:Path):
 
     print(fn, end='\r')
     urllib.request.urlretrieve(url, fn)
+    
+    return fn
 
 
 def load(fn:Path, wld:Path, downsample:int=None, keo:bool=False) -> xarray.DataArray:

@@ -54,6 +54,8 @@ def keogram(flist:list, llslice:tuple, wld:Path):
 
     if ilat is None and ilon is None:
         raise ValueError('must slice in lat or lon')
+
+    assert ilat is not None,'FIXME: currently handling latitude cut (longitude keogram) only'
 # %% setup arrays
     img = load(flist[0], wld, keo=False)
     coords = ('lat',img.lat) if ilon is not None else ('lon',img.lon)
@@ -69,6 +71,7 @@ def keogram(flist:list, llslice:tuple, wld:Path):
             keo.loc[:,img.time,:] = img.sel(lat=ilat, method='nearest', tolerance=0.1)
         elif ilon is not None:
             keo.loc[:,img.time,:] = img.sel(lon=ilon, method='nearest', tolerance=0.1)
+    print()
 # %%
     fg = figure(figsize=(15,10))
     ax = fg.gca()
@@ -85,5 +88,5 @@ def keogram(flist:list, llslice:tuple, wld:Path):
 
     ax.set_xlabel('Time [UTC]')
     ax.set_ylabel('Longitude [deg.]')
-    ax.set_title(f'Keogram from lat={ilat}')
+    ax.set_title(f'NEXRAD Keogram: cut at lat={ilat}.  {time[0]} to {time[-1]}')
 
