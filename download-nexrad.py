@@ -13,18 +13,18 @@ dtmin = 5
 if __name__ == '__main__':
     from argparse import ArgumentParser
     p = ArgumentParser()
-    p.add_argument('start',help='time to start downloading data')
-    p.add_argument('stop',help='time to stop downloading data')
-    p.add_argument('outdir',help='directory to write data')
-    p = p.parse_args()
+    p.add_argument('start', help='time to start downloading data')
+    p.add_argument('stop', help='time to stop downloading data')
+    p.add_argument('outdir', help='directory to write data')
+    P = p.parse_args()
 
-    outdir = Path(p.outdir).expanduser()
-    outdir.mkdir(parents=True,exist_ok=True)
+    outdir = Path(P.outdir).expanduser()
+    outdir.mkdir(parents=True, exist_ok=True)
 
-    start, stop = parse(p.start), parse(p.stop)
+    start, stop = parse(P.start), parse(P.stop)
 # %% NEXRAD
     tnexrad = nq.datetimerange(start, stop, timedelta(minutes=dtmin))
-    print('downloading',len(tnexrad),'files to',outdir)
+    print('downloading', len(tnexrad), 'files to', outdir)
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
         executor.map(nq.download,

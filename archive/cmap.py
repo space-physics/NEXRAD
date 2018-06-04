@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Feb 12 23:30:41 2018
+import matplotlib.pyplot as plt
+import numpy as np
 
-@author: rollo
-"""
+from metpy.cbook import get_test_data
+from metpy.io import Level3File
+from metpy.plots import add_metpy_logo, add_timestamp, ctables
+
 
 # Copyright (c) 2015 MetPy Developers.
 # Distributed under the terms of the BSD 3-Clause License.
@@ -15,12 +16,6 @@ NEXRAD Level 3 File
 
 Use MetPy to read information from a NEXRAD Level 3 (NIDS product) file and plot
 """
-import matplotlib.pyplot as plt
-import numpy as np
-
-from metpy.cbook import get_test_data
-from metpy.io import Level3File
-from metpy.plots import add_metpy_logo, add_timestamp, ctables
 
 ###########################################
 fig, axes = plt.subplots(1, 2, figsize=(15, 8))
