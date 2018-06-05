@@ -24,7 +24,7 @@ def nexrad_keogram(flist: List[Path], keo: List[str], wld: Path, odir: Path=None
     return ofn
 
 
-def nexrad_loop(flist: List[Path], wld: Path):
+def nexrad_loop(flist: List[Path], wld: Path, odir: Path):
     mlp = None
     for f in flist:
         ofn = odir / ('map'+f.name[6:]) if odir else None
@@ -61,5 +61,8 @@ if __name__ == '__main__':
         ofn = nexrad_keogram(flist, P.keo, P.wld, odir)
         print('keogram created at', ofn)
     else:  # full image plots
-        nexrad_loop(flist, P.wld)
+        nexrad_loop(flist, P.wld, odir)
+        if odir:
+            print('\nImageMagick can convert the PNGs to animated GIF by a command like:')
+            print(f'\nconvert map2018-0101T09*.png out.gif')
     show()
