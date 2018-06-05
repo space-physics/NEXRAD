@@ -45,7 +45,10 @@ def download(t: datetime, outdir: os.PathLike, clobber: bool=False) -> Path:
     STEM = 'https://mesonet.agron.iastate.edu/archive/data/'
     outdir = Path(outdir).expanduser()
 
-    fn = outdir / f"nexrad{t.isoformat()}.png"
+    if os.name == 'nt':
+        fn = outdir / f"nexrad{t.isoformat().replace(':','-')}.png"
+    else:
+        fn = outdir / f"nexrad{t.isoformat()}.png"
 # %%
     if not clobber and fn.is_file():  # no clobber
         print(fn, 'SKIPPED', end='\r')

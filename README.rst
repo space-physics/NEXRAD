@@ -1,10 +1,16 @@
 .. image:: https://travis-ci.org/scivision/nexrad-quick-plot.svg?branch=master
     :target: https://travis-ci.org/scivision/nexrad-quick-plot
+    :alt: Travis-CI
 
 .. image:: https://coveralls.io/repos/github/scivision/nexrad-quick-plot/badge.svg?branch=master
     :target: https://coveralls.io/github/scivision/nexrad-quick-plot?branch=master
+    :alt: Coveralls.io
 
-
+.. image:: https://ci.appveyor.com/api/projects/status/jmiiyri2xqdvu5wm?svg=true
+    :target: https://ci.appveyor.com/project/scivision/nexrad-quick-plot
+    :alt: AppVeyor Build Station
+    
+    
 ===================
 Nexrad Quick-plot
 ===================
