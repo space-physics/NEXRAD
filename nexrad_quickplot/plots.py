@@ -1,12 +1,9 @@
 from pathlib import Path
 import xarray
-from typing import List, Tuple, Dict, Any
+from typing import Dict, Any
 from matplotlib.pyplot import figure, draw, fignum_exists
 import matplotlib.ticker as mticker
-import numpy as np
-from dateutil.parser import parse
 import matplotlib.dates as mdates
-from . import load
 #
 import cartopy
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
@@ -77,38 +74,9 @@ def overlay2d(img: xarray.DataArray, ofn: Path=None, mlp: Dict[str, Any]=None,
     return mlp
 
 
-def keogram(flist: List[Path], llslice: Tuple[str, float], wld: Path, ofn: Path=None):
-    """ load all images from flist and stack a single lat or lon index"""
-# %% generate slices
-    ilat = None
-    ilon = None
-    if llslice[0] == 'lat':
-        ilat = llslice[1]
-    elif llslice[0] == 'lon':
-        ilon = llslice[1]
-    else:
-        raise ValueError(f'unknown keogram slice {llslice}')
+def keogram(keo: xarray.DataArray, ofn: Path=None):
+    """stack a single lat or lon index"""
 
-    if ilat is None and ilon is None:
-        raise ValueError('must slice in lat or lon')
-
-    assert ilat is not None, 'FIXME: currently handling latitude cut (longitude keogram) only'
-# %% setup arrays
-    img = load(flist[0], wld, keo=False)
-    coords = ('lat', img.lat) if ilon is not None else ('lon', img.lon)
-    time = [parse(f.stem[6:]) for f in flist]
-
-    keo = xarray.DataArray(np.empty((img.lon.size, len(flist), img.color.size), dtype=img.dtype),
-                           coords=(coords, ('time', time), ('color', img.color)))
-# %% load and stack slices
-    for f in flist:
-        print(f, end='\r')
-        img = load(f, wld, keo=False)
-        if ilat is not None:
-            keo.loc[:, img.time, :] = img.sel(lat=ilat, method='nearest', tolerance=0.1)
-        elif ilon is not None:
-            keo.loc[:, img.time, :] = img.sel(lon=ilon, method='nearest', tolerance=0.1)
-    print()
 # %%
     fg = figure(figsize=(15, 10))
     ax = fg.gca()
@@ -125,7 +93,8 @@ def keogram(flist: List[Path], llslice: Tuple[str, float], wld: Path, ofn: Path=
 
     ax.set_xlabel('Time [UTC]')
     ax.set_ylabel('Longitude [deg.]')
-    ax.set_title(f'NEXRAD Keogram: cut at lat={ilat}.  {time[0]} to {time[-1]}')
+    ax.set_title(f'NEXRAD Keogram: cut at lat={keo.lat}\n'
+                 f'{keo.time.values[0]} to {keo.time.values[-1]}')
 
     draw()
 # %%

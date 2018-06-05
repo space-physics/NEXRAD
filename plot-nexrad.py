@@ -17,7 +17,9 @@ def nexrad_keogram(flist: List[Path], keo: List[str], wld: Path, odir: Path=None
     keoreq: Tuple[str, float] = (keo[0], float(keo[1]))
 
     ofn = odir / f'keo-{keo[0]}{keo[1]}-{flist[0].stem}-{flist[-1].stem}.png' if odir else None
-    nqp.keogram(flist, keoreq, wld, ofn)
+    keo = nq.keogram(flist, keoreq, wld)
+
+    nqp.keogram(keo, ofn)
 
     return ofn
 

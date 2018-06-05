@@ -23,5 +23,15 @@ def test_load():
     assert img.ndim == 3  # RGB image
 
 
+def test_keo():
+    ilat = 45.
+    fn: Path = test_download_nexrad()
+    keo: xarray.DataArray = nq.keogram([fn], ['lat', ilat], WLD)
+
+    assert keo.ndim == 3
+
+    keo.lat == pytest.approx(ilat)
+
+
 if __name__ == '__main__':
     pytest.main()

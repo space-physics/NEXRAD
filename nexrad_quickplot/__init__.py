@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 from datetime import datetime, timedelta
 from dateutil.parser import parse
 import urllib.request
@@ -94,3 +94,39 @@ def load(fn: Path, wld: Path, downsample: int=None, keo: bool=False) -> xarray.D
     assert img.dtype in (np.uint8, np.uint16)
 
     return img
+
+
+def keogram(flist: List[Path], llslice: Tuple[str, float], wld: Path) -> xarray.DataArray:
+    # %% generate slices
+    ilat = None
+    ilon = None
+    if llslice[0] == 'lat':
+        ilat = llslice[1]
+    elif llslice[0] == 'lon':
+        ilon = llslice[1]
+    else:
+        raise ValueError(f'unknown keogram slice {llslice}')
+
+    if ilat is None and ilon is None:
+        raise ValueError('must slice in lat or lon')
+
+    assert ilat is not None, 'FIXME: currently handling latitude cut (longitude keogram) only'
+# %% setup arrays
+    img = load(flist[0], wld, keo=False)
+    coords = ('lat', img.lat) if ilon is not None else ('lon', img.lon)
+    time = [parse(f.stem[6:]) for f in flist]
+
+    keo = xarray.DataArray(np.empty((img.lon.size, len(flist), img.color.size), dtype=img.dtype),
+                           coords=(coords, ('time', time), ('color', img.color)))
+# %% load and stack slices
+    for f in flist:
+        print(f, end='\r')
+        img = load(f, wld, keo=False)
+        if ilat is not None:
+            keo.loc[:, img.time, :] = img.sel(lat=ilat, method='nearest', tolerance=0.1)
+            keo.attrs['lat'] = ilat
+        elif ilon is not None:
+            keo.loc[:, img.time, :] = img.sel(lon=ilon, method='nearest', tolerance=0.1)
+            keo.attrs['lon'] = ilon
+
+    return keo
