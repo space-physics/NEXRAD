@@ -15,7 +15,7 @@
 Nexrad Quick-plot
 ===================
 Easy Python download and plot NEXRAD compositive reflectivity.
-GOES weather satellite moved to its `own repo <https://github.com/scivision/goes-quickplot>`_.
+Uses the RGB high resolution North American PNG images.
 
 tested with ``pytest``, ``flake8`` and ``mypy`` type checking.
 
