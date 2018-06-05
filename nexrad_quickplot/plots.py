@@ -1,7 +1,7 @@
 from pathlib import Path
 import xarray
-from typing import Union
-from matplotlib.pyplot import figure, draw
+from typing import List, Tuple, Dict, Any
+from matplotlib.pyplot import figure, draw, fignum_exists
 import matplotlib.ticker as mticker
 import numpy as np
 from dateutil.parser import parse
@@ -13,8 +13,18 @@ from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 # WGS84 is the default, just calling it out explicity so somene doesn't wonder.
 GREF = cartopy.crs.PlateCarree()  # globe=cartopy.crs.Globe(ellipse='WGS84')
 
+labels = [[-117.1625, 32.715, 'San Diego'],
+          [-87.9073, 41.9742, 'KORD'],
+          [-90.3755, 38.7503, 'KSUS'],
+          [-97.040443, 32.897480, 'KDFW'],
+          [-104.6731667, 39.8616667, 'KDEN'],
+          [-111.1502604, 45.7772358, 'KBZN'],
+          [-106.6082622, 35.0389316, 'KABQ']
+          ]
 
-def overlay2d(img: xarray.DataArray, ofn: Path=None, mlp: dict=None) -> dict:
+
+def overlay2d(img: xarray.DataArray, ofn: Path=None, mlp: Dict[str, Any]=None,
+              verbose: bool=False) -> dict:
     """plot NEXRAD reflectivity on map coordinates"""
     def _savemap(ofn, fg):
         if ofn is not None:
@@ -22,7 +32,7 @@ def overlay2d(img: xarray.DataArray, ofn: Path=None, mlp: dict=None) -> dict:
             print('saving Nexrad map:', ofn, end='\r')
             fg.savefig(ofn, bbox_inches='tight')
 
-    if mlp is not None:
+    if mlp is not None and fignum_exists(mlp['fg'].number):
         mlp['himg'].set_data(img)
         mlp['ht'].set_text(img.filename.name)
         draw()
@@ -40,15 +50,7 @@ def overlay2d(img: xarray.DataArray, ofn: Path=None, mlp: dict=None) -> dict:
                                                        '50m',
                                                        linestyle=':', linewidth=0.5, edgecolor='grey', facecolor='none'))
 
-    labels = [[-117.1625, 32.715, 'San Diego'],
-              [-87.9073, 41.9742, 'KORD'],
-              [-90.3755, 38.7503, 'KSUS'],
-              [-97.040443, 32.897480, 'KDFW'],
-              [-104.6731667, 39.8616667, 'KDEN'],
-              [-111.1502604, 45.7772358, 'KBZN'],
-              [-106.6082622, 35.0389316, 'KABQ']
-              ]
-    if 0:
+    if verbose:
         for l in labels:
             ax.plot(l[0], l[1], 'bo', markersize=7, transform=GREF)
             ax.annotate(l[2], xy=(l[0], l[1]), xytext=(3, 3), textcoords='offset points')
@@ -75,17 +77,17 @@ def overlay2d(img: xarray.DataArray, ofn: Path=None, mlp: dict=None) -> dict:
     return mlp
 
 
-def keogram(flist: list, llslice: tuple, wld: Path, ofn: Path=None):
+def keogram(flist: List[Path], llslice: Tuple[str, float], wld: Path, ofn: Path=None):
     """ load all images from flist and stack a single lat or lon index"""
 # %% generate slices
-    try:
-        ilat = llslice[0]
-    except TypeError:
-        ilat = None
-    try:
+    ilat = None
+    ilon = None
+    if llslice[0] == 'lat':
+        ilat = llslice[1]
+    elif llslice[0] == 'lon':
         ilon = llslice[1]
-    except ValueError:
-        ilon = None
+    else:
+        raise ValueError(f'unknown keogram slice {llslice}')
 
     if ilat is None and ilon is None:
         raise ValueError('must slice in lat or lon')

@@ -11,33 +11,46 @@ Nexrad Quick-plot
 Easy Python download and plot NEXRAD compositive reflectivity.
 GOES weather satellite moved to its `own repo <https://github.com/scivision/goes-quickplot>`_.
 
+tested with ``pytest``, ``flake8`` and ``mypy`` type checking.
+
 Install
 =======
 ::
 
     python -m pip install -e .
 
+
 Usage
 =====
 
 
-1. Get `NEXRAD reflectivity data <https://mesonet.agron.iastate.edu/docs/nexrad_composites/>`_ with parallel download::
+Download NEXRAD data
+--------------------
 
-        python download-nexrad.py start stop outdir
+Get `NEXRAD reflectivity data <https://mesonet.agron.iastate.edu/docs/nexrad_composites/>`_ with parallel download::
 
-   example: download from 2018-01-01 to 2018-01-02 to ``~/data/nexrad``::
+    python download-nexrad.py start stop outdir
 
-        python download-nexrad.py 2018-01-01T00 2018-01-03T00 ~/data/nexrad
+example: download from 2018-01-01 to 2018-01-02 to ``~/data/nexrad``::
 
-2. Plot NEXRAD reflectivity data georegistered via Cartopy::
-
-        python plot-nexrad.py ~/data/nexrad/
-
-   Plot a specific file::
-
-        python plot-nexrad.py ~/data/nexrad/2018-01-01T12:35:00.png
+    python download-nexrad.py 2018-01-01T00 2018-01-03T00 ~/data/nexrad
 
 
+Plot NEXRAD reflectivity data 
+-----------------------------
+(georegistered via Cartopy)
+
+Plot all data in directory::
+
+    python plot-nexrad.py ~/data/nexrad/
+
+Plot a specific file::
+
+    python plot-nexrad.py ~/data/nexrad/2018-01-01T12:35:00.png
+
+Plot via file glob match::
+
+    python plot-nexrad.py ~/data/nexrad/2018-01-01T12*.png
 
 
 Coordinates

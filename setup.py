@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
 
-install_requires = ['python-dateutil', 'numpy', 'imageio>=2.3', 'scikit-image', 'xarray']
-tests_require = ['pytest', 'nose', 'coveralls']
+install_requires = ['python-dateutil', 'numpy', 'imageio', 'scikit-image', 'xarray']
+tests_require = ['pytest', 'nose', 'coveralls', 'flake8', 'mypy']
 
 setup(name='NEXRAD_quickplot',
       packages=find_packages(),
       author='Michael Hirsch, Ph.D.',
-      version='0.5.0',
+      version='0.6.0',
       url='https://github.com/scivision/nexrad-quickplot',
       long_description=open('README.rst').read(),
       description='easily download and plot NEXRAD weather radar reflectivity data',

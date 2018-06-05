@@ -17,6 +17,9 @@ install: pip install -e .[tests]
 script:
   - pytest -v
   - flake8
+#  - mypy . --ignore-missing-imports  
+# waiting for new Python release, per my bugfix 
+# https://github.com/python/typeshed/pull/2194
 
 after_success:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then 

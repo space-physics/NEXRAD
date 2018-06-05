@@ -1,5 +1,9 @@
 #!/usr/bin/env python
-"""parallel file downloading for Python 3"""
+"""parallel file downloading for Python 3
+
+to downsize these images en masse, see
+https://www.scivision.co/force-imagemagick-ram-drive/
+"""
 from datetime import timedelta
 from dateutil.parser import parse
 from pathlib import Path
@@ -15,7 +19,8 @@ if __name__ == '__main__':
     p = ArgumentParser()
     p.add_argument('start', help='time to start downloading data')
     p.add_argument('stop', help='time to stop downloading data')
-    p.add_argument('outdir', help='directory to write data')
+    p.add_argument('outdir', help='directory to write data', nargs='?', default='.')
+    p.add_argument('-d', '--debug', action='store_true')
     P = p.parse_args()
 
     outdir = Path(P.outdir).expanduser()
@@ -26,8 +31,12 @@ if __name__ == '__main__':
     tnexrad = nq.datetimerange(start, stop, timedelta(minutes=dtmin))
     print('downloading', len(tnexrad), 'files to', outdir)
 
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        executor.map(nq.download,
-                     tnexrad, itertools.repeat(outdir),
-                     timeout=600)
+    if P.debug:
+        for t in tnexrad:
+            nq.download(t, outdir)
+    else:
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            executor.map(nq.download,
+                         tnexrad, itertools.repeat(outdir),
+                         timeout=600)
     print()
