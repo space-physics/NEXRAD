@@ -76,7 +76,7 @@ process.
 mkdir orig
 cp *.png orig
 
-nice mogrify -scale 10% "\*.png"
+nice mogrify -scale 10% "*.png"
 ```
 
 If you have trouble with this being very slow, try:
