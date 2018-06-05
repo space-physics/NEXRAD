@@ -10,6 +10,21 @@
     :target: https://ci.appveyor.com/project/scivision/nexrad-quick-plot
     :alt: AppVeyor Build Station
     
+.. image:: https://img.shields.io/pypi/pyversions/NEXRAD-quickplot.svg
+  :target: https://pypi.python.org/pypi/NEXRAD-quickplot
+  :alt: Python versions (PyPi)
+
+.. image::  https://img.shields.io/pypi/format/NEXRAD-quickplot.svg
+  :target: https://pypi.python.org/pypi/NEXRAD-quickplot
+  :alt: Distribution format (PyPi)
+
+.. image:: https://api.codeclimate.com/v1/badges/d2df020d3c1e6522412a/maintainability
+   :target: https://codeclimate.com/github/scivision/nexrad-quick-plot/maintainability
+   :alt: Maintainability
+   
+.. image:: http://pepy.tech/badge/NEXRAD-quickplot
+   :target: http://pepy.tech/project/NEXRAD-quickplot
+   :alt: PyPi Download stats
     
 ===================
 Nexrad Quick-plot
