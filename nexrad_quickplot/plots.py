@@ -1,6 +1,7 @@
 from pathlib import Path
 import xarray
-from typing import Dict, Any
+import bisect
+from typing import Dict, Any, Union
 from matplotlib.pyplot import figure, draw, fignum_exists
 import matplotlib.ticker as mticker
 import matplotlib.dates as mdates
@@ -19,8 +20,15 @@ labels = [[-117.1625, 32.715, 'San Diego'],
           [-106.6082622, 35.0389316, 'KABQ']
           ]
 
+LAT_TICK = list(range(20, 55, 5))
+LON_TICK = list(range(-140, -40, 20))
 
-def overlay2d(img: xarray.DataArray, ofn: Path=None, mlp: Dict[str, Any]=None,
+
+def overlay2d(img: xarray.DataArray,
+              ofn: Path=None,
+              mlp: Dict[str, Any]=None,
+              lattick: Union[float, int, list]=None,
+              lontick: Union[float, int, list]=None,
               verbose: bool=False) -> dict:
     """plot NEXRAD reflectivity on map coordinates"""
     def _savemap(ofn, fg):
@@ -62,9 +70,21 @@ def overlay2d(img: xarray.DataArray, ofn: Path=None, mlp: Dict[str, Any]=None,
     gl.ylabels_left = False
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
-    # optional
-    gl.xlocator = mticker.FixedLocator(range(-140, -40, 20))
-    gl.ylocator = mticker.FixedLocator(range(20, 54, 4))
+# %% ticks
+    if isinstance(lontick, (int, float)):
+        bisect.insort(LON_TICK, lontick)
+        lontick = LON_TICK
+    elif lontick is None:
+        lontick = LON_TICK
+
+    if isinstance(lattick, (int, float)):
+        bisect.insort(LAT_TICK, lattick)
+        lattick = LAT_TICK
+    elif lattick is None:
+        lattick = LAT_TICK
+
+    gl.xlocator = mticker.FixedLocator(lontick)
+    gl.ylocator = mticker.FixedLocator(lattick)
 
     draw()
     _savemap(ofn, fg)

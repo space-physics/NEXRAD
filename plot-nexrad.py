@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 """
 keogram example:
-python plot-nexrad.py ~/data/nexrad2017-08/temp/ --keo 40 none -odir ~/data/myplots
+python plot-nexrad.py ~/data/2017-08-21/nexrad/ --keo 40 none -odir ~/data/myplots
+
+./plot-nexrad.py ~/data/2017-08-21/nexrad/ -odir ~/data/2017-08-21/nexrad/plots -pat nexrad2017-08-21T14*.png
 """
 from typing import Tuple, List, Optional
 import nexrad_quickplot as nq
@@ -12,7 +14,8 @@ import seaborn as sns
 sns.set_context('talk')
 
 
-def nexrad_keogram(flist: List[Path], keo: List[str], wld: Path, odir: Path=None) -> Optional[Path]:
+def nexrad_keogram(flist: List[Path], keo: List[str],
+                   wld: Path, odir: Path=None) -> Optional[Path]:
 
     keoreq: Tuple[str, float] = (keo[0], float(keo[1]))
 
@@ -24,12 +27,14 @@ def nexrad_keogram(flist: List[Path], keo: List[str], wld: Path, odir: Path=None
     return ofn
 
 
-def nexrad_loop(flist: List[Path], wld: Path, odir: Path):
+def nexrad_loop(flist: List[Path],
+                wld: Path, odir: Optional[Path],
+                lattick: float=None):
     mlp = None
     for f in flist:
         ofn = odir / ('map'+f.name[6:]) if odir else None
         img = nq.load(f, P.wld)
-        mlp = nqp.overlay2d(img, ofn, mlp)
+        mlp = nqp.overlay2d(img, ofn, mlp, lattick=lattick)
         if not ofn:  # display only
             pause(1)
 
@@ -42,6 +47,8 @@ if __name__ == '__main__':
     p.add_argument('-wld', help='.wld filename', default='n0q.wld')
     p.add_argument('-keo', help='make keogram at lat/lon value',
                    metavar=('lat/lon', 'value'), nargs=2)
+    p.add_argument('-lattick', help='specify specific latitude to have additional tick at',
+                   type=float)
     p.add_argument('-odir', help='save graphs to this directory')
     p.add_argument
     P = p.parse_args()
@@ -61,7 +68,7 @@ if __name__ == '__main__':
         ofn = nexrad_keogram(flist, P.keo, P.wld, odir)
         print('keogram created at', ofn)
     else:  # full image plots
-        nexrad_loop(flist, P.wld, odir)
+        nexrad_loop(flist, P.wld, odir, P.lattick)
         if odir:
             print('\nImageMagick can convert the PNGs to animated GIF by a command like:')
             print(f'\nconvert map2018-0101T09*.png out.gif')
