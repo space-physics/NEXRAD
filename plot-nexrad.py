@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 """
 keogram example:
-python plot-nexrad.py ~/data/2017-08-21/nexrad/ --keo 40 none -odir ~/data/myplots
+python plot-nexrad.py ~/data/2017-08-21/nexrad/ -keo lat 40 -odir ~/data/myplots
 
+Plot stack example:
 ./plot-nexrad.py ~/data/2017-08-21/nexrad/ -odir ~/data/2017-08-21/nexrad/plots -pat nexrad2017-08-21T14*.png
+
+Panel subplot example:
+./plot-nexrad.py ~/data/2017-08-21/nexrad/nexrad2017-08-21T12:00:00.png ~/data/2017-08-21/nexrad/nexrad2017-08-21T12:30:00.png -odir ~/data/2017-08-21/nexrad/plots
 """
 from typing import Tuple, List, Optional
 import nexrad_quickplot as nq
@@ -11,7 +15,36 @@ import nexrad_quickplot.plots as nqp
 from pathlib import Path
 from matplotlib.pyplot import show, pause
 import seaborn as sns
-sns.set_context('talk')
+sns.set_context('paper')
+
+
+def genplots(P):
+
+    odir = Path(P.odir).expanduser() if P.odir else None
+# %% file list--panel
+    if len(P.datadir) > 1:
+        flist = [Path(f).expanduser() for f in P.datadir]
+        ofn = odir / f'panel-{flist[0].stem}-{flist[-1].stem}.png' if odir else None
+        nqp.nexrad_panel(flist, P.wld, ofn, P.lattick)
+        return
+# %% glob input directory
+    datadir = Path(P.datadir[0]).expanduser()
+    flist = [datadir] if datadir.is_file() else sorted(datadir.glob(P.pat))
+
+    if len(flist) == 0:
+        raise FileNotFoundError(f'did not find files in {datadir} with pattern {P.pat}')
+# %% Process / Plot
+    if P.keo is not None:
+        ofn = nexrad_keogram(flist, P.keo, P.wld, odir)
+        print('keogram created at', ofn)
+        return
+
+    if P.keo is None:  # full image plots
+        nexrad_loop(flist, P.wld, odir, P.lattick)
+        if odir:
+            print('\nImageMagick can convert the PNGs to animated GIF by a command like:')
+            print(f'\nconvert map2018-0101T09*.png out.gif')
+        return
 
 
 def nexrad_keogram(flist: List[Path], keo: List[str],
@@ -30,7 +63,7 @@ def nexrad_keogram(flist: List[Path], keo: List[str],
 def nexrad_loop(flist: List[Path],
                 wld: Path, odir: Optional[Path],
                 lattick: float=None):
-    mlp = None
+    mlp = {}
     for f in flist:
         ofn = odir / ('map'+f.name[6:]) if odir else None
         img = nq.load(f, P.wld)
@@ -53,23 +86,6 @@ if __name__ == '__main__':
     p.add_argument
     P = p.parse_args()
 
-    odir = Path(P.odir).expanduser() if P.odir else None
-# %% find files to plot
-    if len(P.datadir) > 1:
-        flist = [Path(f).expanduser() for f in P.datadir if f.is_file()]
-    else:
-        datadir = Path(P.datadir[0]).expanduser()
-        flist = [datadir] if datadir.is_file() else sorted(datadir.glob(P.pat))
+    genplots(P)
 
-    if len(flist) == 0:
-        raise FileNotFoundError(f'did not find files in {datadir} with pattern {P.pat}')
-# %% Process / Plot
-    if P.keo is not None:
-        ofn = nexrad_keogram(flist, P.keo, P.wld, odir)
-        print('keogram created at', ofn)
-    else:  # full image plots
-        nexrad_loop(flist, P.wld, odir, P.lattick)
-        if odir:
-            print('\nImageMagick can convert the PNGs to animated GIF by a command like:')
-            print(f'\nconvert map2018-0101T09*.png out.gif')
     show()

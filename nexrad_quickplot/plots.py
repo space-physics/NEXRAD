@@ -1,10 +1,11 @@
 from pathlib import Path
 import xarray
 import bisect
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, List, Optional
 from matplotlib.pyplot import figure, draw, fignum_exists
 import matplotlib.ticker as mticker
 import matplotlib.dates as mdates
+from . import load
 #
 import cartopy
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
@@ -22,11 +23,34 @@ labels = [[-117.1625, 32.715, 'San Diego'],
 
 LAT_TICK = list(range(20, 55, 5))
 LON_TICK = list(range(-140, -40, 20))
+DPI = 600
+
+
+def nexrad_panel(flist: List[Path],
+                 wld: Path, ofn: Optional[Path],
+                 lattick: float=None):
+
+    fg = figure()
+    axs = fg.subplots(len(flist), 1, sharex=True, subplot_kw=dict(projection=GREF))
+
+    mlp = {'fg': fg}
+    xlabel = [None]*len(flist)
+    xlabel[-1] = True
+    for ax, fn,xlb in zip(axs, flist, xlabel):
+        mlp['ax'] = ax
+        mlp['himg'] = None
+        mlp['xlabel'] = xlb
+
+        mlp = overlay2d(load(fn, wld), mlp=mlp, lattick=lattick)
+
+    if ofn:
+        print('saving', ofn)
+        fg.savefig(ofn, bbox_inches='tight', dpi=DPI)
 
 
 def overlay2d(img: xarray.DataArray,
               ofn: Path=None,
-              mlp: Dict[str, Any]=None,
+              mlp: Dict[str, Any]={},
               lattick: Union[float, int, list]=None,
               lontick: Union[float, int, list]=None,
               verbose: bool=False) -> dict:
@@ -35,18 +59,22 @@ def overlay2d(img: xarray.DataArray,
         if ofn is not None:
             ofn = Path(ofn).expanduser()
             print('saving Nexrad map:', ofn, end='\r')
-            fg.savefig(ofn, bbox_inches='tight')
+            fg.savefig(ofn, bbox_inches='tight', dpi=DPI)
 
-    if mlp is not None and fignum_exists(mlp['fg'].number):
+
+    if 'fg' in mlp and fignum_exists(mlp['fg'].number) and 'himg' in mlp and mlp['himg'] is not None:
         mlp['himg'].set_data(img)
         mlp['ht'].set_text(img.filename.name)
         draw()
         _savemap(ofn, mlp['fg'])
         return mlp
-
-    fg = figure(figsize=(15, 10))
-
-    ax = fg.gca(projection=GREF)
+# %% make new figure
+    if 'ax' not in mlp:
+        fg = figure(figsize=(15, 10))
+        ax = fg.gca(projection=GREF)
+    else:
+        fg = mlp['fg']
+        ax = mlp['ax']
 
     ht = ax.set_title(img.filename.name)
 
@@ -66,8 +94,12 @@ def overlay2d(img: xarray.DataArray,
 # %% grid lines and labels
     gl = ax.gridlines(crs=GREF, draw_labels=True,
                       linewidth=1, color='gray', alpha=0.5, linestyle='--')
+
     gl.xlabels_top = False
     gl.ylabels_left = False
+    if 'xlabel' in mlp and not mlp['xlabel']:
+        gl.xlabels_bottom = False
+
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
 # %% ticks
@@ -89,7 +121,7 @@ def overlay2d(img: xarray.DataArray,
     draw()
     _savemap(ofn, fg)
 
-    mlp = {'fg': fg, 'himg': himg, 'ht': ht}
+    mlp = {'fg': fg, 'ax': ax, 'himg': himg, 'ht': ht}
 
     return mlp
 
@@ -121,4 +153,4 @@ def keogram(keo: xarray.DataArray, ofn: Path=None):
     if ofn is not None:
         ofn = Path(ofn).expanduser()
         print('saving keogram to', ofn)
-        fg.savefig(ofn, bbox_inches='tight')
+        fg.savefig(ofn, bbox_inches='tight', dpi=DPI)

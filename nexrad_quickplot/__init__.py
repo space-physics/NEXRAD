@@ -67,6 +67,8 @@ def load(fn: Path, wld: Path, downsample: int=None, keo: bool=False) -> xarray.D
     """
     loads and modifies NEXRAD image for plotting
     """
+    if not fn.is_file():
+        raise FileNotFoundError(f'{fn} is not a file.')
 
     img = imageio.imread(fn)
 

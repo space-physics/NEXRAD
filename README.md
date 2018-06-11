@@ -40,13 +40,17 @@ Plot all data in directory:
 
     python plot-nexrad.py ~/data/nexrad/
 
-Plot a specific file:
+Plot a specific file (subplots if multiple files specified):
 
     python plot-nexrad.py ~/data/nexrad/2018-01-01T12:35:00.png
 
 Plot via file glob match:
 
-    python plot-nexrad.py ~/data/nexrad/2018-01-01T12*.png
+    python plot-nexrad.py ~/data/nexrad/ -pat 2018-01-01T12*.png
+    
+Keogram (specify lat or lon and value):
+
+    python plot-nexrad.py ~/data/2017-08-21/nexrad/ -keo lat 40 
 
 ## Coordinates
 
