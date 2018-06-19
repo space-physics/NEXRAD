@@ -2,12 +2,12 @@
 from setuptools import setup, find_packages
 
 install_requires = ['python-dateutil', 'numpy', 'imageio', 'scikit-image', 'xarray']
-tests_require = ['pytest', 'nose', 'coveralls', 'flake8', 'mypy']
+tests_require = ['pytest', 'coveralls', 'flake8', 'mypy']
 
 setup(name='NEXRAD_quickplot',
       packages=find_packages(),
       author='Michael Hirsch, Ph.D.',
-      version='0.6.2',
+      version='0.6.3',
       url='https://github.com/scivision/nexrad-quick-plot',
       long_description=open('README.md').read(),
       long_description_content_type="text/markdown",

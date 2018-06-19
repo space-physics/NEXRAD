@@ -25,8 +25,8 @@ def wld2mesh(fn: Path, nxy: tuple) -> np.ndarray:
     # ny, nx = nxy
     ny, nx = (5400, 12200)  # FIXME has to be from original image size
 
-    lat = np.linspace(wld[5] + ny*wld[3], wld[5], nxy[0])
-    lon = np.linspace(wld[4], wld[4]+nx*wld[0], nxy[1])
+    lat = np.linspace(wld[5] + ny * wld[3], wld[5], nxy[0])
+    lon = np.linspace(wld[4], wld[4] + nx * wld[0], nxy[1])
     # trailing index fixes occasional off by one due to floating point error
     # lat = np.arange(wld[5]-wld[3] + ny*wld[3], wld[5]-wld[3], -wld[3])[:ny]
     # lon = np.arange(wld[4], wld[4]+nx*wld[0], wld[0])[:nx]
@@ -35,7 +35,7 @@ def wld2mesh(fn: Path, nxy: tuple) -> np.ndarray:
 
 
 def datetimerange(start: datetime, stop: datetime, step: timedelta) -> List[datetime]:
-    return [start + i*step for i in range((stop-start) // step)]
+    return [start + i * step for i in range((stop - start) // step)]
 
 
 def download(t: datetime, outdir: os.PathLike, clobber: bool=False) -> Path:
@@ -78,7 +78,7 @@ def load(fn: Path, wld: Path, downsample: int=None, keo: bool=False) -> xarray.D
         assert isinstance(downsample, int)
         if st is None:
             raise ImportError('you need to install scikit-image    pip install skimage')
-        img = st.resize(img, (img.shape[0]//downsample, img.shape[1]//downsample),
+        img = st.resize(img, (img.shape[0] // downsample, img.shape[1] // downsample),
                         mode='constant', cval=255,
                         preserve_range=True).astype(img.dtype)
 

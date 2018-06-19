@@ -1,6 +1,8 @@
 from pathlib import Path
 import xarray
+import numpy as np
 import bisect
+import imageio
 from typing import Dict, Any, Union, List, Optional
 from matplotlib.pyplot import figure, draw, fignum_exists
 import matplotlib.ticker as mticker
@@ -28,21 +30,30 @@ DPI = 600
 
 def nexrad_panel(flist: List[Path],
                  wld: Path, ofn: Optional[Path],
-                 lattick: float=None):
+                 lattick: float=None,
+                 scalefn: Path=None):
 
     fg = figure()
     axs = fg.subplots(len(flist), 1, sharex=True, subplot_kw=dict(projection=GREF))
 
     mlp = {'fg': fg}
-    xlabel = [None]*len(flist)
+    xlabel: List[bool] = [False] * len(flist)
     xlabel[-1] = True
-    for ax, fn,xlb in zip(axs, flist, xlabel):
+    for ax, fn, xlb in zip(axs, flist, xlabel):
         mlp['ax'] = ax
         mlp['himg'] = None
         mlp['xlabel'] = xlb
 
         mlp = overlay2d(load(fn, wld), mlp=mlp, lattick=lattick)
 
+    fg.suptitle('NEXRAD N0Q reflectivity')
+# %% color scale
+    if scalefn and scalefn.is_file():
+        scale = np.rot90(imageio.imread(scalefn), 2)
+        ax = fg.add_axes([0.85, 0.25, 0.075, 0.5])
+        ax.imshow(scale)
+        ax.axis('off')  # turn off all ticks, etc.
+# %% optional plot save
     if ofn:
         print('saving', ofn)
         fg.savefig(ofn, bbox_inches='tight', dpi=DPI)
@@ -53,18 +64,21 @@ def overlay2d(img: xarray.DataArray,
               mlp: Dict[str, Any]={},
               lattick: Union[float, int, list]=None,
               lontick: Union[float, int, list]=None,
+              scalefn: Path=None,
               verbose: bool=False) -> dict:
     """plot NEXRAD reflectivity on map coordinates"""
+
+    title = img.filename.stem[6:-3]
+
     def _savemap(ofn, fg):
         if ofn is not None:
             ofn = Path(ofn).expanduser()
             print('saving Nexrad map:', ofn, end='\r')
             fg.savefig(ofn, bbox_inches='tight', dpi=DPI)
 
-
     if 'fg' in mlp and fignum_exists(mlp['fg'].number) and 'himg' in mlp and mlp['himg'] is not None:
         mlp['himg'].set_data(img)
-        mlp['ht'].set_text(img.filename.name)
+        mlp['ht'].set_text(title)
         draw()
         _savemap(ofn, mlp['fg'])
         return mlp
@@ -76,7 +90,7 @@ def overlay2d(img: xarray.DataArray,
         fg = mlp['fg']
         ax = mlp['ax']
 
-    ht = ax.set_title(img.filename.name)
+    ht = ax.set_title(title)
 
     ax.add_feature(cartopy.feature.COASTLINE, linewidth=0.5, linestyle=':')
     ax.add_feature(cartopy.feature.NaturalEarthFeature('cultural', 'admin_1_states_provinces',
@@ -96,7 +110,8 @@ def overlay2d(img: xarray.DataArray,
                       linewidth=1, color='gray', alpha=0.5, linestyle='--')
 
     gl.xlabels_top = False
-    gl.ylabels_left = False
+    gl.ylabels_left = True
+    gl.ylabels_right = False
     if 'xlabel' in mlp and not mlp['xlabel']:
         gl.xlabels_bottom = False
 
@@ -126,7 +141,9 @@ def overlay2d(img: xarray.DataArray,
     return mlp
 
 
-def keogram(keo: xarray.DataArray, ofn: Path=None):
+def keogram(keo: xarray.DataArray,
+            ofn: Path=None,
+            scalefn: Path=None):
     """stack a single lat or lon index"""
 
 # %%

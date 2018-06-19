@@ -8,10 +8,10 @@
 
 # Nexrad Quick-plot
 
-Easy Python download and plot NEXRAD compositive reflectivity. Uses the
-RGB high resolution North American PNG images.
+Easy Python download and plot NEXRAD N0Q compositive reflectivity. 
+Uses RGB high resolution PNG images of North America.
 
-tested with `pytest`, `flake8` and `mypy` type checking.
+Tested with `pytest`, `flake8` and `mypy` type checking.
 
 ## Install
 
@@ -19,6 +19,13 @@ tested with `pytest`, `flake8` and `mypy` type checking.
 
 ## Usage
 
+RGB data scaling: NEXRAD N0Q base reflectivity maps.
+
+* Black: No Data
+* -32 dBZ .. 90 dBZ
+* 0.5 dBZ increment
+
+![NEXRAD N0Q RGB scaling](doc/n0q_ramp.png)
 
 ### Download NEXRAD data
 
