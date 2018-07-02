@@ -13,6 +13,7 @@ from typing import Tuple, List, Optional
 import nexrad_quickplot as nq
 import nexrad_quickplot.plots as nqp
 from pathlib import Path
+from argparse import ArgumentParser
 from matplotlib.pyplot import show, pause
 import seaborn as sns
 sns.set_context('paper', font_scale=1.2)
@@ -75,8 +76,7 @@ def nexrad_loop(flist: List[Path],
             pause(1)
 
 
-if __name__ == '__main__':
-    from argparse import ArgumentParser
+def main():
     p = ArgumentParser()
     p.add_argument('datadir', help='directory of NEXRAD PNG data to read', nargs='+')
     p.add_argument('-pat', help='file glob pattern', nargs='?', default='*.png')
@@ -92,3 +92,7 @@ if __name__ == '__main__':
     genplots(P, SCALEFN)
 
     show()
+    
+
+if __name__ == '__main__':
+    main()

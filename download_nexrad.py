@@ -9,18 +9,18 @@ from dateutil.parser import parse
 from pathlib import Path
 import concurrent.futures
 import itertools
-#
+from argparse import ArgumentParser
 import nexrad_quickplot as nq
 
-dtmin = 5
 
-if __name__ == '__main__':
-    from argparse import ArgumentParser
+def main():
     p = ArgumentParser()
     p.add_argument('start', help='time to start downloading data')
     p.add_argument('stop', help='time to stop downloading data')
     p.add_argument('outdir', help='directory to write data', nargs='?', default='.')
     p.add_argument('-d', '--debug', action='store_true')
+    p.add_argument('-t', '--timestep', help='time step to download (minutes)', type=int,
+                   default=5)
     P = p.parse_args()
 
     outdir = Path(P.outdir).expanduser()
@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     start, stop = parse(P.start), parse(P.stop)
 # %% NEXRAD
-    tnexrad = nq.datetimerange(start, stop, timedelta(minutes=dtmin))
+    tnexrad = nq.datetimerange(start, stop, timedelta(minutes=P.timestep))
     print('downloading', len(tnexrad), 'files to', outdir)
 
     if P.debug:
@@ -40,3 +40,7 @@ if __name__ == '__main__':
                          tnexrad, itertools.repeat(outdir),
                          timeout=600)
     print()
+    
+
+if __name__ == '__main__':
+    main()
