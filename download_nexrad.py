@@ -40,7 +40,7 @@ def main():
                          tnexrad, itertools.repeat(outdir),
                          timeout=600)
     print()
-    
+
 
 if __name__ == '__main__':
     main()

@@ -70,7 +70,7 @@ def nexrad_loop(flist: List[Path],
     mlp: dict = {}
     for f in flist:
         ofn = odir / ('map' + f.name[6:]) if odir else None
-        img = nq.load(f, P.wld)
+        img = nq.load(f, wld)
         mlp = nqp.overlay2d(img, ofn, mlp, lattick=lattick, scalefn=scalefn)
         if not ofn:  # display only
             pause(1)
@@ -92,7 +92,7 @@ def main():
     genplots(P, SCALEFN)
 
     show()
-    
+
 
 if __name__ == '__main__':
     main()
