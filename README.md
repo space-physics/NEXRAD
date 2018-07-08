@@ -33,11 +33,11 @@ Get
 [NEXRAD reflectivity data](https://mesonet.agron.iastate.edu/docs/nexrad_composites/) 
 with parallel download:
 
-    python download-nexrad.py start stop outdir
+   download-nexrad start stop outdir
 
 example: download from 2018-01-01 to 2018-01-02 to `~/data/nexrad`:
 
-    python download-nexrad.py 2018-01-01T00 2018-01-03T00 ~/data/nexrad
+    download-nexrad 2018-01-01T00 2018-01-03T00 ~/data/nexrad
 
 ### Plot NEXRAD reflectivity data
 
@@ -45,19 +45,19 @@ example: download from 2018-01-01 to 2018-01-02 to `~/data/nexrad`:
 
 Plot all data in directory:
 
-    python plot-nexrad.py ~/data/nexrad/
+    plot-nexrad ~/data/nexrad/
 
 Plot a specific file (subplots if multiple files specified):
 
-    python plot-nexrad.py ~/data/nexrad/2018-01-01T12:35:00.png
+    plot-nexrad ~/data/nexrad/2018-01-01T12:35:00.png
 
 Plot via file glob match:
 
-    python plot-nexrad.py ~/data/nexrad/ -pat 2018-01-01T12*.png
+    plot-nexrad ~/data/nexrad/ -pat 2018-01-01T12*.png
     
 Keogram (specify lat or lon and value):
 
-    python plot-nexrad.py ~/data/2017-08-21/nexrad/ -keo lat 40 
+    plot-nexrad ~/data/2017-08-21/nexrad/ -keo lat 40 
 
 ## Coordinates
 
