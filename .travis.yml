@@ -9,7 +9,7 @@ git:
 
 python:
   - 3.6
-  - 3.7
+#  - 3.7  # FIXME: scikit-image whl
 
 os:
   - linux
