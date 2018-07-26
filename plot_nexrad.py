@@ -11,13 +11,13 @@ Panel subplot example:
 """
 from typing import Tuple, List, Optional
 import nexrad_quickplot as nq
-import nexrad_quickplot.plots as nqp
 from pathlib import Path
 from argparse import ArgumentParser
 try:
+    import nexrad_quickplot.plots as nqp
     from matplotlib.pyplot import show, pause
 except ImportError:
-    show = pause = None
+    nqp = show = pause = None
 import seaborn as sns
 sns.set_context('paper', font_scale=1.2)
 
@@ -31,7 +31,7 @@ def genplots(P, scalefn: Path):
     if len(P.datadir) > 1:
         flist = [Path(f).expanduser() for f in P.datadir]
         ofn = odir / f'panel-{flist[0].stem}-{flist[-1].stem}.png' if odir else None
-        if not P.quiet:
+        if not P.quiet and nqp is not None:
             nqp.nexrad_panel(flist, P.wld, ofn, P.lattick, scalefn=scalefn)
         return
 # %% glob input directory
@@ -59,7 +59,7 @@ def nexrad_keogram(flist: List[Path], keo: List[str],
     ofn = odir / f'keo-{keo[0]}{keo[1]}-{flist[0].stem}-{flist[-1].stem}.png' if odir else None
     dkeo = nq.keogram(flist, keoreq, wld)
 
-    if not quiet:
+    if not quiet and nqp is not None:
         nqp.keogram(dkeo, ofn, scalefn=scalefn)
 
     return ofn
@@ -73,7 +73,7 @@ def nexrad_loop(flist: List[Path],
     for f in flist:
         ofn = odir / ('map' + f.name[6:]) if odir else None
         img = nq.load(f, wld)
-        if not quiet:
+        if not quiet and nqp is not None:
             mlp = nqp.overlay2d(img, ofn, mlp, lattick=lattick, scalefn=scalefn)
             if not ofn:  # display only
                 pause(1)
@@ -83,13 +83,13 @@ def main():
     p = ArgumentParser()
     p.add_argument('datadir', help='directory of NEXRAD PNG data to read', nargs='+')
     p.add_argument('-pat', help='file glob pattern', nargs='?', default='*.png')
-    p.add_argument('-wld', help='.wld filename', default=Path(__file__).parent/'n0q.wld')
+    p.add_argument('-wld', help='.wld filename', default=Path(__file__).parent / 'n0q.wld')
     p.add_argument('-keo', help='make keogram at lat/lon value',
                    metavar=('lat/lon', 'value'), nargs=2)
     p.add_argument('-lattick', help='specify specific latitude to have additional tick at',
                    type=float)
     p.add_argument('-odir', help='save graphs to this directory')
-    p.add_argument('-q','--quiet',help='no plots',action='store_true')
+    p.add_argument('-q', '--quiet', help='no plots', action='store_true')
     p.add_argument
     P = p.parse_args()
 
