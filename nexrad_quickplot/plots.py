@@ -3,16 +3,21 @@ import xarray
 import numpy as np
 import bisect
 import imageio
+import logging
 from typing import Dict, Any, Union, List, Optional
-from matplotlib.pyplot import figure, draw, fignum_exists
-import matplotlib.ticker as mticker
-import matplotlib.dates as mdates
+try:
+    from matplotlib.pyplot import figure, draw, fignum_exists
+    import matplotlib.ticker as mticker
+    import matplotlib.dates as mdates
+    import cartopy
+    from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+    # WGS84 is the default, just calling it out explicity so somene doesn't wonder.
+    GREF = cartopy.crs.PlateCarree()  # globe=cartopy.crs.Globe(ellipse='WGS84')
+except (ImportError, RuntimeError) as e:
+    logging.error(str(e))
+    figure = None
 from . import load
-#
-import cartopy
-from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
-# WGS84 is the default, just calling it out explicity so somene doesn't wonder.
-GREF = cartopy.crs.PlateCarree()  # globe=cartopy.crs.Globe(ellipse='WGS84')
+
 
 labels = [[-117.1625, 32.715, 'San Diego'],
           [-87.9073, 41.9742, 'KORD'],
@@ -32,6 +37,9 @@ def nexrad_panel(flist: List[Path],
                  wld: Path, ofn: Optional[Path],
                  lattick: float=None,
                  scalefn: Path=None):
+    if figure is None:
+        logging.error('skipping panel plot')
+        return
 
     fg = figure()
     axs = fg.subplots(len(flist), 1, sharex=True, subplot_kw=dict(projection=GREF))
@@ -67,6 +75,9 @@ def overlay2d(img: xarray.DataArray,
               scalefn: Path=None,
               verbose: bool=False) -> dict:
     """plot NEXRAD reflectivity on map coordinates"""
+    if figure is None:
+        logging.error('skipping overlay plot')
+        return {}
 
     title = img.filename.stem[6:-3]
 
@@ -145,7 +156,9 @@ def keogram(keo: xarray.DataArray,
             ofn: Path=None,
             scalefn: Path=None):
     """stack a single lat or lon index"""
-
+    if figure is None:
+        logging.error('skipping keogram')
+        return
 # %%
     fg = figure(figsize=(15, 10))
     ax = fg.gca()

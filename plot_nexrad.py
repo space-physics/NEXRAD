@@ -16,10 +16,11 @@ from argparse import ArgumentParser
 try:
     import nexrad_quickplot.plots as nqp
     from matplotlib.pyplot import show, pause
-except ImportError:
+    import seaborn as sns
+    sns.set_context('paper', font_scale=1.2)
+except (RuntimeError, ImportError):
     nqp = show = pause = None  # type: ignore
-import seaborn as sns
-sns.set_context('paper', font_scale=1.2)
+
 
 SCALEFN = Path(__file__).parent / 'doc' / 'n0q_ramp.png'
 
