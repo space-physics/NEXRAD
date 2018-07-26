@@ -2,7 +2,7 @@
 import pytest
 from pathlib import Path
 import xarray
-from datetime import datetime
+from datetime import datetime, date
 #
 import nexrad_quickplot as nq
 
@@ -13,6 +13,9 @@ WLD = odir.parent / 'n0q.wld'
 @pytest.fixture
 def test_download_nexrad() -> Path:
     fn = nq.download(datetime(2018, 1, 1, 0), odir)
+
+    fn = nq.download(date(2018, 1, 1), odir)  # verifying date and noclobber OK
+
     return fn
 
 
@@ -34,4 +37,4 @@ def test_keo():
 
 
 if __name__ == '__main__':
-    pytest.main()
+    pytest.main([__file__])

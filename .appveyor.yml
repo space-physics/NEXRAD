@@ -6,7 +6,7 @@ stack: python 3
 build: off
 
 environment:
-  PY_DIR: C:\Python37-x64
+  PY_DIR: C:\Python36-x64  # FIXME: py37 waiting scikit-image
 
 clone_depth: 3
 

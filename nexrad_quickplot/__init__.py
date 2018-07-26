@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 from typing import List, Tuple
-from datetime import datetime, timedelta
+import datetime
 from dateutil.parser import parse
 import urllib.request
 import numpy as np
@@ -34,23 +34,26 @@ def wld2mesh(fn: Path, nxy: tuple) -> np.ndarray:
     return lat, lon
 
 
-def datetimerange(start: datetime, stop: datetime, step: timedelta) -> List[datetime]:
+def datetimerange(start: datetime.datetime, stop: datetime.datetime, step: datetime.timedelta) -> List[datetime.datetime]:
     return [start + i * step for i in range((stop - start) // step)]
 
 
-def download(t: datetime, outdir: os.PathLike, clobber: bool=False) -> Path:
+def download(t: datetime.datetime, outdir: os.PathLike, clobber: bool=False) -> Path:
     """download NEXRAD file for this time
     https://mesonet.agron.iastate.edu/archive/data/2018/02/12/GIS/uscomp/n0q_201802120000.png
     """
     STEM = 'https://mesonet.agron.iastate.edu/archive/data/'
     outdir = Path(outdir).expanduser()
 
+    if isinstance(t, datetime.date) and not isinstance(t, datetime.datetime):
+        t = datetime.datetime.combine(t, datetime.time.min)
+
     if os.name == 'nt':
         fn = outdir / f"nexrad{t.isoformat().replace(':','-')}.png"
     else:
         fn = outdir / f"nexrad{t.isoformat()}.png"
 # %%
-    if not clobber and fn.is_file():  # no clobber
+    if not clobber and fn.is_file() and fn.stat().st_size > 0:  # no clobber
         print(fn, 'SKIPPED', end='\r')
         return fn
 
