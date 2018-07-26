@@ -9,7 +9,7 @@ git:
 
 env:
   - TRAVIS_PYTHON_VERSION=3.6
-#  - TRAVIS_PYTHON_VERSION=3.7  FIXME: waiting wheel: https://pypi.org/project/scikit-image/#files
+  - TRAVIS_PYTHON_VERSION=3.7
 
 os:
   - linux
