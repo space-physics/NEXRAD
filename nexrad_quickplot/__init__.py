@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Tuple
 import datetime
 from dateutil.parser import parse
-import urllib.request
+import requests
 import numpy as np
 import xarray
 import imageio
@@ -61,7 +61,8 @@ def download(t: datetime.datetime, outdir: os.PathLike, clobber: bool=False) -> 
                 f'{t.year}{t.month:02d}{t.day:02d}{t.hour:02d}{t.minute:02d}.png')
 
     print(fn, end='\r')
-    urllib.request.urlretrieve(url, fn)
+    with fn.open('wb') as f:
+        f.write(requests.get(url, allow_redirects=True, timeout=10).content)
 
     return fn
 
