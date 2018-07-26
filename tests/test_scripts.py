@@ -9,7 +9,7 @@ def test_download_load():
     with tempfile.TemporaryDirectory() as d:
         odir = Path(d)
         subprocess.check_call(['download_nexrad',
-                               '2018-01-01T00:00', '2018-01-01-T00:10', odir])
+                               '2018-01-01T00:00', '2018-01-01-T00:10', str(odir)])
 
         flist = sorted(map(str, odir.glob('nexrad*.png')))
         assert len(flist) == 2
