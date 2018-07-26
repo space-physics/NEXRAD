@@ -17,7 +17,7 @@ try:
     import nexrad_quickplot.plots as nqp
     from matplotlib.pyplot import show, pause
 except ImportError:
-    nqp = show = pause = None
+    nqp = show = pause = None  # type: ignore
 import seaborn as sns
 sns.set_context('paper', font_scale=1.2)
 
