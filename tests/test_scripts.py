@@ -6,6 +6,8 @@ import pytest
 
 
 def test_download_load():
+    pytest.importorskip('matplotlib')
+
     with tempfile.TemporaryDirectory() as d:
         odir = Path(d)
         subprocess.check_call(['download_nexrad',
@@ -18,4 +20,4 @@ def test_download_load():
 
 
 if __name__ == '__main__':
-    pytest.main([__file__])
+    pytest.main(['-x', __file__])
