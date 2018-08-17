@@ -26,7 +26,19 @@ def test_load():
     fn = download_nexrad()
     img = nq.load(fn)
 
-    assert img.ndim == 3  # RGB image
+    assert img.ndim == 3
+    assert img.shape[2] == 3  # RGB image
+    assert img.shape[:2] == (5400, 12200)
+
+
+def test_load_downsample():
+    pytest.importorskip('skimage.transform')
+    fn = download_nexrad()
+    img = nq.load(fn, downsample=4)
+
+    assert img.ndim == 3
+    assert img.shape[2] == 3  # RGB image
+    assert img.shape[:2] == (1350, 3050)
 
 
 def test_keo():

@@ -55,9 +55,7 @@ def load(fn: Path, wld: Path=None, downsample: int=None, keo: bool=False) -> xar
         assert isinstance(downsample, int)
         if st is None:
             raise ImportError('install scikit-image by: \n  pip install skimage')
-        img = st.resize(img, (img.shape[0] // downsample, img.shape[1] // downsample),
-                        mode='constant', cval=255,
-                        preserve_range=True).astype(img.dtype)
+        img = st.downscale_local_mean(img, (downsample, downsample, 1), cval=255).astype(img.dtype)
 
 # %% make transparent
     if not keo:

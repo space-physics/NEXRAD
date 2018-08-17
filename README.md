@@ -35,7 +35,7 @@ For high-fidelity science data, the lower level data are needed--contact us if i
 ```python
 import nexrad_quickplot as nq
 
-dat = nq.load('~/data/2017-08-21/nexrad/nexrad2017-08-19T00:00:00.png')
+dat = nq.load('~/data/2015-01-19/nexrad/nexrad2015-01-19T01:15:00.png')
 
 >>> dat
 <xarray.DataArray (lat: 540, lon: 1220, color: 3)>
@@ -49,12 +49,14 @@ Coordinates:
   * lon      (lon) float64 -126.0 -125.9 -125.9 -125.8 -125.8 -125.7 -125.7 ...
   * color    (color)  'R' 'G' 'B'
 Attributes:
-    filename:  ~/data/nexrad2015-01-19T01:23:00.png
+    filename:  ~/data/nexrad2015-01-19T01:15:00.png
     wldfn:     None
-    time:      2017-08-19 00:00:00
+    time:      2015-01-19 01:15:00
 ```
 
 `.lat` and `.lon` are vectors of geodetic latitude and longitude respectively, computed based on the `.wld` file corresponding to the images.
+
+
 
 
 ### Download NEXRAD data
@@ -93,7 +95,7 @@ which is the replacement for
   ```
 * Keogram (specify lat or lon and value):
   ```sh
-  plot-nexrad ~/data/2017-08-21/nexrad/ -keo lat 40
+  plot-nexrad ~/data/2018-01-01/nexrad/ -keo lat 40
   ```
 
 ## Notes
