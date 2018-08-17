@@ -1,6 +1,7 @@
 import imageio
 from pathlib import Path
 import xarray
+import logging
 import functools
 from dateutil.parser import parse
 import numpy as np
@@ -17,7 +18,7 @@ R = Path(__file__).parent
 WLD = R / 'data' / 'n0q.wld'
 
 
-def download(t: datetime, outdir: Path, clobber: bool=False) -> Path:
+def download(t: datetime, outdir: Path, overwrite: bool=False) -> Path:
     """download NEXRAD file for this time
     https://mesonet.agron.iastate.edu/archive/data/2018/02/12/GIS/uscomp/n0q_201802120000.png
     """
@@ -32,16 +33,10 @@ def download(t: datetime, outdir: Path, clobber: bool=False) -> Path:
     else:
         fn = outdir / f"nexrad{t.isoformat()}.png"
 # %%
-    if not clobber and fn.is_file() and fn.stat().st_size > 0:  # no clobber
-        print(fn, 'SKIPPED', end='\r')
-        return fn
-
     url: str = (f'{STEM}{t.year}/{t.month:02d}/{t.day:02d}/GIS/uscomp/n0q_'
                 f'{t.year}{t.month:02d}{t.day:02d}{t.hour:02d}{t.minute:02d}.png')
 
-    print(fn, end='\r')
-    with fn.open('wb') as f:
-        f.write(requests.get(url, allow_redirects=True, timeout=10).content)
+    urlretrieve(url, fn, overwrite)
 
     return fn
 
@@ -81,6 +76,22 @@ def load(fn: Path, wld: Path=None, downsample: int=None, keo: bool=False) -> xar
     assert img.dtype in (np.uint8, np.uint16)
 
     return img
+
+
+def urlretrieve(url: str, fn: Path, overwrite: bool=False):
+    if not overwrite and fn.is_file() and fn.stat().st_size > 10000:
+        print(f'SKIPPED {fn}')
+        return
+# %% prepare to download
+    R = requests.head(url, allow_redirects=True, timeout=10)
+    if R.status_code != 200:
+        logging.error(f'{url} not found. \n HTTP ERROR {R.status_code}')
+        return
+# %% download
+    print(f'downloading {int(R.headers["Content-Length"])//1000000} MBytes:  {fn.name}')
+    R = requests.get(url, allow_redirects=True, timeout=10)
+    with fn.open('wb') as f:
+        f.write(R.content)
 
 
 @functools.lru_cache()

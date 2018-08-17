@@ -2,7 +2,8 @@
 import pytest
 from pytest import approx
 from pathlib import Path
-from datetime import datetime, date
+from datetime import datetime
+import os
 #
 import nexrad_quickplot as nq
 
@@ -13,7 +14,10 @@ odir = Path(__file__).parent
 def download_nexrad() -> Path:
     fn = nq.download(datetime(2018, 1, 1, 0), odir)
 
-    fn = nq.download(date(2018, 1, 1), odir)  # verifying date and noclobber OK
+    if os.name == 'nt':
+        assert fn.name == 'nexrad2018-01-01T00-00-00.png'
+    else:
+        assert fn.name == 'nexrad2018-01-01T00:00:00.png'
 
     return fn
 
