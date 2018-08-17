@@ -1,4 +1,4 @@
-language: generic
+language: python
 group: travis_latest
 
 git:
@@ -10,7 +10,7 @@ python:
 
 os:
 - linux
-  
+
 install: pip install -e .[tests]
 
 script:
