@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/121310094.svg)](https://zenodo.org/badge/latestdoi/121310094)
 [![Build Status](https://travis-ci.org/scivision/NEXRADutils.svg?branch=master)](https://travis-ci.org/scivision/NEXRADutils)
 [![Coverage Status](https://coveralls.io/repos/github/scivision/NEXRADutils/badge.svg?branch=master)](https://coveralls.io/github/scivision/NEXRADutils?branch=master)
 [![Build status](https://ci.appveyor.com/api/projects/status/dasnnsarbyankxqb?svg=true)](https://ci.appveyor.com/project/scivision/nexradutils)
