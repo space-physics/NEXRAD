@@ -5,7 +5,7 @@ from pathlib import Path
 from datetime import datetime
 import os
 #
-import nexrad_quickplot as nq
+import nexradutils as nq
 
 odir = Path(__file__).parent
 
@@ -52,4 +52,4 @@ def test_keo():
 
 
 if __name__ == '__main__':
-    pytest.main(['-x', __file__])
+    pytest.main(['-xrsv', __file__])

@@ -12,7 +12,7 @@ Panel subplot example:
 from pathlib import Path
 from argparse import ArgumentParser
 from matplotlib.pyplot import show
-import nexrad_quickplot.plots as nqp
+import nexradutils.plots as nqp
 
 
 SCALEFN = Path(__file__).parent / 'doc' / 'n0q_ramp.png'

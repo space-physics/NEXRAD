@@ -1,12 +1,13 @@
-[![Travis-CI](https://travis-ci.org/scivision/nexrad-quick-plot.svg?branch=master)](https://travis-ci.org/scivision/nexrad-quick-plot)
-[![Coveralls.io](https://coveralls.io/repos/github/scivision/nexrad-quick-plot/badge.svg?branch=master)](https://coveralls.io/github/scivision/nexrad-quick-plot?branch=master)
-[![AppVeyor Build Station](https://ci.appveyor.com/api/projects/status/jmiiyri2xqdvu5wm?svg=true)](https://ci.appveyor.com/project/scivision/nexrad-quick-plot)
-[![image](https://img.shields.io/pypi/pyversions/NEXRAD-quickplot.svg)](https://pypi.python.org/pypi/NEXRAD-quickplot)
-[![image](https://img.shields.io/pypi/format/NEXRAD-quickplot.svg)](https://pypi.python.org/pypi/NEXRAD-quickplot)
-[![Maintainability](https://api.codeclimate.com/v1/badges/d2df020d3c1e6522412a/maintainability)](https://codeclimate.com/github/scivision/nexrad-quick-plot/maintainability)
-[![PyPi Download stats](http://pepy.tech/badge/NEXRAD-quickplot)](http://pepy.tech/project/NEXRAD-quickplot)
+[![Build Status](https://travis-ci.org/scivision/NEXRADutils.svg?branch=master)](https://travis-ci.org/scivision/NEXRADutils)
+[![Coverage Status](https://coveralls.io/repos/github/scivision/NEXRADutils/badge.svg?branch=master)](https://coveralls.io/github/scivision/NEXRADutils?branch=master)
+[![Build status](https://ci.appveyor.com/api/projects/status/dasnnsarbyankxqb?svg=true)](https://ci.appveyor.com/project/scivision/nexradutils)
+[![Maintainability](https://api.codeclimate.com/v1/badges/05529f213d77cfa3c1f2/maintainability)](https://codeclimate.com/github/scivision/NEXRADutils/maintainability)
+[![image](https://img.shields.io/pypi/pyversions/NEXRADutils.svg)](https://pypi.python.org/pypi/NEXRADutils)
+[![image](https://img.shields.io/pypi/format/NEXRADutils.svg)](https://pypi.python.org/pypi/NEXRADutils)
 
-# Nexrad Quick-plot
+[![PyPi Download stats](http://pepy.tech/badge/NEXRADutils)](http://pepy.tech/project/NEXRADutils)
+
+# NEXRAD utilities
 
 Easy Python download and plot NEXRAD N0Q compositive reflectivity.
 Uses RGB high resolution PNG images of North America.
@@ -33,7 +34,7 @@ We use `xarray.DataArray` and plot image by image.
 For high-fidelity science data, the lower level data are needed--contact us if interested.
 
 ```python
-import nexrad_quickplot as nq
+import nexradutils as nq
 
 dat = nq.load('~/data/2015-01-19/nexrad/nexrad2015-01-19T01:15:00.png')
 
@@ -76,7 +77,7 @@ download-nexrad 2018-01-01T00 2018-01-03T00 ~/data/nexrad
 
 ### Plot NEXRAD reflectivity data
 
-NEXRAD QuickPlot plots are georegistered via 
+NEXRAD plots are georegistered via 
 [Cartopy](https://pypi.org/project/Cartopy/), 
 which is the replacement for 
 [deprecated Basemap](https://www.scivision.co/cartopy-replace-deprecated-basemap/)

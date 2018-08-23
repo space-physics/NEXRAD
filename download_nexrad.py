@@ -10,7 +10,7 @@ from pathlib import Path
 import concurrent.futures
 import itertools
 from argparse import ArgumentParser
-import nexrad_quickplot as nq
+import nexradutils as nq
 
 
 def main():

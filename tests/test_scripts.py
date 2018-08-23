@@ -6,7 +6,7 @@ import pytest
 
 
 def test_download_load():
-    pytest.importorskip('matplotlib')
+    pytest.importorskip('cartopy')
 
     with tempfile.TemporaryDirectory() as d:
         odir = Path(d)
@@ -20,4 +20,4 @@ def test_download_load():
 
 
 if __name__ == '__main__':
-    pytest.main(['-x', __file__])
+    pytest.main(['-xrsv', __file__])
