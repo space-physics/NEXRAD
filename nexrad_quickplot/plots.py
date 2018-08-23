@@ -4,7 +4,7 @@ import numpy as np
 import imageio
 import logging
 from typing import Dict, Any, Union, List, Optional
-from matplotlib.pyplot import figure, draw, fignum_exists, pause
+from matplotlib.pyplot import figure, draw
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import cartomap.geogmap as cm
@@ -13,7 +13,6 @@ from . import load
 from .io import loadkeogram
 import cartopy.crs as ccrs
 
-GREF = ccrs.PlateCarree()
 PROJECTION = 'lambert'
 FIGSIZE = [12,8]
 LATLIM = [25,55]
@@ -23,41 +22,6 @@ MERIDIANS = list(range(-140, -20, 20))
 grid_linewidth = 2
 grid_color = 'k'
 DPI = 100
-
-
-def nexrad_panel(flist: List[Path],
-                 wld: Path, ofn: Optional[Path],
-                 lattick: float=None,
-                 scalefn: Path=None):
-    if figure is None:
-        logging.error('skipping panel plot')
-        return
-
-    fg = figure()
-    axs = fg.subplots(len(flist), 1, sharex=True, subplot_kw=dict(projection=GREF))
-
-    mlp = {'fg': fg}
-    xlabel: List[bool] = [False] * len(flist)
-    xlabel[-1] = True
-    for ax, fn, xlb in zip(axs, flist, xlabel):
-        mlp['ax'] = ax
-        mlp['himg'] = None
-        mlp['xlabel'] = xlb
-
-        mlp = overlay2d(load(fn, wld), mlp=mlp, lattick=lattick)
-
-    fg.suptitle('NEXRAD N0Q reflectivity')
-# %% color scale
-    if scalefn and scalefn.is_file():
-        scale = np.rot90(imageio.imread(scalefn), 2)
-        ax = fg.add_axes([0.85, 0.1, 0.075, 0.3])
-        ax.imshow(scale)
-        ax.axis('off')  # turn off all ticks, etc.
-# %% optional plot save
-#    if ofn:
-#        print('saving', ofn)
-#        fg.savefig(ofn, bbox_inches='tight', dpi=DPI)
-
 
 def overlay2d(img: xarray.DataArray,
               ofn: Path=None,
@@ -74,12 +38,10 @@ def overlay2d(img: xarray.DataArray,
     title = img.filename.stem[6:-3]
 
     def _savemap(ofn, fg):
-        if ofn is not None:
-            ofn=str(ofn)
-            ofn = ofn.replace(':','')
-            print('\n Saving Nexrad map:', ofn)
-            plt.savefig(ofn, dpi=DPI)
-            plt.close(fig)
+        ofn=str(ofn)
+        print('\n Saving Nexrad map:', ofn)
+        plt.savefig(ofn, dpi=DPI)
+        plt.close(fig)
             
     fig = cm.plotCartoMap(latlim=LATLIM,lonlim=LONLIM,figsize=FIGSIZE,
                              title=title,projection=PROJECTION,
@@ -89,7 +51,7 @@ def overlay2d(img: xarray.DataArray,
 
     plt.imshow(img, origin='upper',
                      extent=[img.lon[0], img.lon[-1], img.lat[0], img.lat[-1]],
-                     transform=GREF)
+                     transform=ccrs.PlateCarree())
     
     plt.tight_layout()
     
@@ -98,9 +60,12 @@ def overlay2d(img: xarray.DataArray,
         ax = fig.add_axes([0.9, 0.15, 0.055, 0.3])
         ax.imshow(scale)
         ax.axis('off')  # turn off all ticks, etc.
-
-    _savemap(ofn, fig)
-
+    
+    if ofn is not None:
+        _savemap(ofn, fig)
+    else:
+        plt.show()
+        
     return mlp
 
 
@@ -141,23 +106,15 @@ def keogram(keo: xarray.DataArray,
 def genplots(P, scalefn: Path, quiet: bool=False):
 
     odir = Path(P.odir).expanduser() if P.odir else None
-# %% file list--panel
-    if len(P.datadir) > 1:
-        flist = [Path(f).expanduser() for f in P.datadir]
-        ofn = odir / f'panel-{flist[0].stem}-{flist[-1].stem}.png' if odir else None
-        if not quiet:
-            nexrad_panel(flist, P.wld, ofn, P.lattick, scalefn=scalefn)
-        return
-# %% glob input directory
     datadir = Path(P.datadir[0]).expanduser()
     flist = [datadir] if datadir.is_file() else sorted(datadir.glob(P.pat))
-
     if len(flist) == 0:
         raise FileNotFoundError(f'did not find files in {datadir} with pattern {P.pat}')
-# %% Process / Plot
+    # Keogram
     if isinstance(P.keo, list) and len(P.keo) == 2:
         ofn = nexrad_keogram(flist, P.keo, P.wld, odir, scalefn=scalefn, quiet=P.quiet)
         print('keogram created at', ofn)
+    # Map
     else:
         nexrad_loop(flist, P.wld, odir, P.lattick, scalefn=scalefn, quiet=P.quiet)
         if odir:
@@ -182,12 +139,9 @@ def nexrad_keogram(flist: List[Path], keo: List[str],
 def nexrad_loop(flist: List[Path],
                 wld: Path, odir: Optional[Path],
                 lattick: float=None, scalefn: Path=None, quiet: bool=False):
-
+    
     mlp: dict = {}
     for f in flist:
         ofn = odir / (PROJECTION + f.name[6:]) if odir else None
         img = load(f, wld, downsample=8)
-        if not quiet:
-            mlp = overlay2d(img, ofn, mlp, lattick=lattick, scalefn=scalefn)
-            if not ofn:  # display only
-                pause(1)
+        mlp = overlay2d(img, ofn, mlp, lattick=lattick, scalefn=scalefn)

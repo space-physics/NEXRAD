@@ -11,7 +11,6 @@ Panel subplot example:
 """
 from pathlib import Path
 from argparse import ArgumentParser
-from matplotlib.pyplot import show
 import nexrad_quickplot.plots as nqp
 
 
@@ -28,14 +27,12 @@ def main():
     p.add_argument('-lattick', help='specify specific latitude to have additional tick at',
                    type=float)
     p.add_argument('-odir', help='save graphs to this directory')
-    p.add_argument('-q', '--quiet', help='no plots', action='store_true')
+    p.add_argument('-q', '--quiet', help='no plots', action='store_true',default=True)
     p.add_argument
     P = p.parse_args()
 
     nqp.genplots(P, SCALEFN)
 
-    if show is not None:
-        show()
 
 
 if __name__ == '__main__':
