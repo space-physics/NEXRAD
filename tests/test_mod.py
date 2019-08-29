@@ -4,6 +4,7 @@ from pytest import approx
 from pathlib import Path
 from datetime import datetime
 import os
+
 #
 import nexradutils as nq
 
@@ -14,10 +15,10 @@ odir = Path(__file__).parent
 def download_nexrad() -> Path:
     fn = nq.download(datetime(2018, 1, 1, 0), odir)
 
-    if os.name == 'nt':
-        assert fn.name == 'nexrad2018-01-01T00-00-00.png'
+    if os.name == "nt":
+        assert fn.name == "nexrad2018-01-01T00-00-00.png"
     else:
-        assert fn.name == 'nexrad2018-01-01T00:00:00.png'
+        assert fn.name == "nexrad2018-01-01T00:00:00.png"
 
     return fn
 
@@ -32,7 +33,7 @@ def test_load():
 
 
 def test_load_downsample():
-    pytest.importorskip('skimage.transform')
+    pytest.importorskip("skimage.transform")
     fn = download_nexrad()
     img = nq.load(fn, downsample=4)
 
@@ -42,14 +43,14 @@ def test_load_downsample():
 
 
 def test_keo():
-    ilat = 45.
+    ilat = 45.0
     fn = download_nexrad()
-    keo = nq.loadkeogram([fn], ['lat', ilat])
+    keo = nq.loadkeogram([fn], ["lat", ilat])
 
     assert keo.ndim == 3
 
     keo.lat == approx(ilat)
 
 
-if __name__ == '__main__':
-    pytest.main(['-xrsv', __file__])
+if __name__ == "__main__":
+    pytest.main(["-xrsv", __file__])

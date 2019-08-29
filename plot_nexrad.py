@@ -15,20 +15,22 @@ from matplotlib.pyplot import show
 import nexradutils.plots as nqp
 
 
-SCALEFN = Path(__file__).parent / 'doc' / 'n0q_ramp.png'
+SCALEFN = Path(__file__).parent / "doc" / "n0q_ramp.png"
 
 
 def main():
     p = ArgumentParser()
-    p.add_argument('datadir', help='directory of NEXRAD PNG data to read', nargs='+')
-    p.add_argument('-pat', help='file glob pattern', nargs='?', default='*.png')
-    p.add_argument('-wld', help='.wld filename')
-    p.add_argument('-keo', help='make keogram at lat/lon value',
-                   metavar=('lat/lon', 'value'), nargs=2)
-    p.add_argument('-lattick', help='specify specific latitude to have additional tick at',
-                   type=float)
-    p.add_argument('-odir', help='save graphs to this directory')
-    p.add_argument('-q', '--quiet', help='no plots', action='store_true')
+    p.add_argument("datadir", help="directory of NEXRAD PNG data to read", nargs="+")
+    p.add_argument("-pat", help="file glob pattern", nargs="?", default="*.png")
+    p.add_argument("-wld", help=".wld filename")
+    p.add_argument(
+        "-keo", help="make keogram at lat/lon value", metavar=("lat/lon", "value"), nargs=2
+    )
+    p.add_argument(
+        "-lattick", help="specify specific latitude to have additional tick at", type=float
+    )
+    p.add_argument("-odir", help="save graphs to this directory")
+    p.add_argument("-q", "--quiet", help="no plots", action="store_true")
     p.add_argument
     P = p.parse_args()
 
@@ -38,5 +40,5 @@ def main():
         show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

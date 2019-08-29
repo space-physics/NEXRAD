@@ -1,4 +1,5 @@
 [![DOI](https://zenodo.org/badge/121310094.svg)](https://zenodo.org/badge/latestdoi/121310094)
+
 [![Build Status](https://travis-ci.org/scivision/NEXRADutils.svg?branch=master)](https://travis-ci.org/scivision/NEXRADutils)
 [![Coverage Status](https://coveralls.io/repos/github/scivision/NEXRADutils/badge.svg?branch=master)](https://coveralls.io/github/scivision/NEXRADutils?branch=master)
 [![Build status](https://ci.appveyor.com/api/projects/status/dasnnsarbyankxqb?svg=true)](https://ci.appveyor.com/project/scivision/nexradutils)
@@ -78,10 +79,10 @@ download-nexrad 2018-01-01T00 2018-01-03T00 ~/data/nexrad
 
 ### Plot NEXRAD reflectivity data
 
-NEXRAD plots are georegistered via 
-[Cartopy](https://pypi.org/project/Cartopy/), 
-which is the replacement for 
-[deprecated Basemap](https://www.scivision.co/cartopy-replace-deprecated-basemap/)
+NEXRAD plots are georegistered via
+[Cartopy](https://pypi.org/project/Cartopy/),
+which is the replacement for
+[deprecated Basemap](https://www.scivision.dev/cartopy-replace-deprecated-basemap/)
 
 * Plot all data in directory:
   ```sh

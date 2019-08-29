@@ -9,39 +9,44 @@ from datetime import datetime, date, time
 import os
 import requests
 from typing import Sequence, Tuple
+
 try:
     import skimage.transform as st
 except ImportError:
     st = None
 
 R = Path(__file__).parent
-WLD = R / 'data' / 'n0q.wld'
+WLD = R / "data" / "n0q.wld"
 
 
-def download(t: datetime, outdir: Path, overwrite: bool=False) -> Path:
+def download(t: datetime, outdir: Path, overwrite: bool = False) -> Path:
     """download NEXRAD file for this time
     https://mesonet.agron.iastate.edu/archive/data/2018/02/12/GIS/uscomp/n0q_201802120000.png
     """
-    STEM = 'https://mesonet.agron.iastate.edu/archive/data/'
+    STEM = "https://mesonet.agron.iastate.edu/archive/data/"
     outdir = Path(outdir).expanduser()
 
     if isinstance(t, date) and not isinstance(t, datetime):
         t = datetime.combine(t, time.min)
 
-    if os.name == 'nt':
+    if os.name == "nt":
         fn = outdir / f"nexrad{t.isoformat().replace(':','-')}.png"
     else:
         fn = outdir / f"nexrad{t.isoformat()}.png"
-# %%
-    url: str = (f'{STEM}{t.year}/{t.month:02d}/{t.day:02d}/GIS/uscomp/n0q_'
-                f'{t.year}{t.month:02d}{t.day:02d}{t.hour:02d}{t.minute:02d}.png')
+    # %%
+    url: str = (
+        f"{STEM}{t.year}/{t.month:02d}/{t.day:02d}/GIS/uscomp/n0q_"
+        f"{t.year}{t.month:02d}{t.day:02d}{t.hour:02d}{t.minute:02d}.png"
+    )
 
     urlretrieve(url, fn, overwrite)
 
     return fn
 
 
-def load(fn: Path, wld: Path=None, downsample: int=None, keo: bool=False) -> xarray.DataArray:
+def load(
+    fn: Path, wld: Path = None, downsample: int = None, keo: bool = False
+) -> xarray.DataArray:
     """
     loads and modifies NEXRAD image for plotting
     """
@@ -49,46 +54,48 @@ def load(fn: Path, wld: Path=None, downsample: int=None, keo: bool=False) -> xar
 
     img = imageio.imread(fn)
 
-    assert img.ndim == 3 and img.shape[2] in (3, 4), 'unexpected NEXRAD image format'
+    assert img.ndim == 3 and img.shape[2] in (3, 4), "unexpected NEXRAD image format"
 
     if downsample is not None:
         assert isinstance(downsample, int)
         if st is None:
-            raise ImportError('install scikit-image by: \n  pip install skimage')
+            raise ImportError("install scikit-image by: \n  pip install skimage")
         img = st.downscale_local_mean(img, (downsample, downsample, 1), cval=255).astype(img.dtype)
 
-# %% make transparent
+    # %% make transparent
     if not keo:
         img = img[..., :3]
 
         mask = img[..., :3].all(axis=2) == 0
         img[mask, :3] = 255  # make no signal be white
 
-# %% collect output
+    # %% collect output
     lat, lon = wld2mesh(wld, img.shape[:2])
 
-    img = xarray.DataArray(img,
-                           coords=[('lat', lat), ('lon', lon), ('color', ['R', 'G', 'B'])],
-                           attrs={'filename': fn, 'wldfn': wld, 'time': parse(fn.stem[6:])})
+    img = xarray.DataArray(
+        img,
+        coords=[("lat", lat), ("lon", lon), ("color", ["R", "G", "B"])],
+        attrs={"filename": fn, "wldfn": wld, "time": parse(fn.stem[6:])},
+    )
 
     assert img.dtype in (np.uint8, np.uint16)
 
     return img
 
 
-def urlretrieve(url: str, fn: Path, overwrite: bool=False):
+def urlretrieve(url: str, fn: Path, overwrite: bool = False):
     if not overwrite and fn.is_file() and fn.stat().st_size > 10000:
-        print(f'SKIPPED {fn}')
+        print(f"SKIPPED {fn}")
         return
-# %% prepare to download
+    # %% prepare to download
     R = requests.head(url, allow_redirects=True, timeout=10)
     if R.status_code != 200:
-        logging.error(f'{url} not found. \n HTTP ERROR {R.status_code}')
+        logging.error(f"{url} not found. \n HTTP ERROR {R.status_code}")
         return
-# %% download
+    # %% download
     print(f'downloading {int(R.headers["Content-Length"])//1000000} MBytes:  {fn.name}')
     R = requests.get(url, allow_redirects=True, timeout=10)
-    with fn.open('wb') as f:
+    with fn.open("wb") as f:
         f.write(R.content)
 
 
@@ -114,37 +121,41 @@ def wld2mesh(wldfn: Path, nxy: tuple) -> np.ndarray:
     return lat, lon
 
 
-def loadkeogram(flist: Sequence[Path], llslice: Tuple[str, float], wld: Path=None) -> xarray.DataArray:
+def loadkeogram(
+    flist: Sequence[Path], llslice: Tuple[str, float], wld: Path = None
+) -> xarray.DataArray:
     # %% generate slices
     ilat = None
     ilon = None
-    if llslice[0] == 'lat':
+    if llslice[0] == "lat":
         ilat = llslice[1]
-    elif llslice[0] == 'lon':
+    elif llslice[0] == "lon":
         ilon = llslice[1]
     else:
-        raise ValueError(f'unknown keogram slice {llslice}')
+        raise ValueError(f"unknown keogram slice {llslice}")
 
     if ilat is None and ilon is None:
-        raise ValueError('must slice in lat or lon')
+        raise ValueError("must slice in lat or lon")
 
-    assert ilat is not None, 'FIXME: currently handling latitude cut (longitude keogram) only'
-# %% setup arrays
+    assert ilat is not None, "FIXME: currently handling latitude cut (longitude keogram) only"
+    # %% setup arrays
     img = load(flist[0], wld, keo=False)
-    coords = ('lat', img.lat) if ilon is not None else ('lon', img.lon)
+    coords = ("lat", img.lat) if ilon is not None else ("lon", img.lon)
     time = [parse(f.stem[6:]) for f in flist]
 
-    keo = xarray.DataArray(np.empty((img.lon.size, len(flist), img.color.size), dtype=img.dtype),
-                           coords=(coords, ('time', time), ('color', img.color)))
-# %% load and stack slices
+    keo = xarray.DataArray(
+        np.empty((img.lon.size, len(flist), img.color.size), dtype=img.dtype),
+        coords=(coords, ("time", time), ("color", img.color)),
+    )
+    # %% load and stack slices
     for f in flist:
-        print(f, end='\r')
+        print(f, end="\r")
         img = load(f, wld, keo=False)
         if ilat is not None:
-            keo.loc[:, img.time, :] = img.sel(lat=ilat, method='nearest', tolerance=0.1)
-            keo.attrs['lat'] = ilat
+            keo.loc[:, img.time, :] = img.sel(lat=ilat, method="nearest", tolerance=0.1)
+            keo.attrs["lat"] = ilat
         elif ilon is not None:
-            keo.loc[:, img.time, :] = img.sel(lon=ilon, method='nearest', tolerance=0.1)
-            keo.attrs['lon'] = ilon
+            keo.loc[:, img.time, :] = img.sel(lon=ilon, method="nearest", tolerance=0.1)
+            keo.attrs["lon"] = ilon
 
     return keo
