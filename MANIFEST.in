@@ -1,3 +1,2 @@
-include LICENSE
-recursive-include nexradutils/data *.wld
-recursive-include tests *.py *.png
+recursive-include src/nexradutils/data *.wld
+recursive-include src/nexradutils/tests *.png

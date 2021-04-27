@@ -1,3 +1,4 @@
+from __future__ import annotations
 import imageio
 from pathlib import Path
 import xarray
@@ -100,7 +101,7 @@ def urlretrieve(url: str, fn: Path, overwrite: bool = False):
 
 
 @functools.lru_cache()
-def wld2mesh(wldfn: Path, nxy: tuple) -> np.ndarray:
+def wld2mesh(wldfn: Path, nxy: tuple) -> tuple[np.ndarray, np.ndarray]:
     """converts .wld to lat/lon mesh for Cartopy/Matplotlib plots
     assumes the .wld file is EPSG:4326 coordinates (WGS84)
     """

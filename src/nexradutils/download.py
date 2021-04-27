@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-"""parallel file downloading for Python 3
+"""parallel NEXRAD downloading
 
 to downsize these images en masse, see
 https://www.scivision.dev/force-imagemagick-ram-drive/

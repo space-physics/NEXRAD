@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import pytest
 from pytest import approx
 from pathlib import Path
@@ -23,8 +22,8 @@ def download_nexrad() -> Path:
     return fn
 
 
-def test_load():
-    fn = download_nexrad()
+def test_load(download_nexrad):
+    fn = download_nexrad
     img = nq.load(fn)
 
     assert img.ndim == 3
@@ -32,9 +31,9 @@ def test_load():
     assert img.shape[:2] == (5400, 12200)
 
 
-def test_load_downsample():
+def test_load_downsample(download_nexrad):
     pytest.importorskip("skimage.transform")
-    fn = download_nexrad()
+    fn = download_nexrad
     img = nq.load(fn, downsample=4)
 
     assert img.ndim == 3
@@ -42,15 +41,11 @@ def test_load_downsample():
     assert img.shape[:2] == (1350, 3050)
 
 
-def test_keo():
+def test_keo(download_nexrad):
     ilat = 45.0
-    fn = download_nexrad()
+    fn = download_nexrad
     keo = nq.loadkeogram([fn], ["lat", ilat])
 
     assert keo.ndim == 3
 
     keo.lat == approx(ilat)
-
-
-if __name__ == "__main__":
-    pytest.main(["-xrsv", __file__])

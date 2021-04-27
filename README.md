@@ -1,22 +1,16 @@
+# NEXRAD quick plots
+
 [![DOI](https://zenodo.org/badge/121310094.svg)](https://zenodo.org/badge/latestdoi/121310094)
-
-[![Build Status](https://travis-ci.org/scivision/NEXRADutils.svg?branch=master)](https://travis-ci.org/scivision/NEXRADutils)
-[![Coverage Status](https://coveralls.io/repos/github/scivision/NEXRADutils/badge.svg?branch=master)](https://coveralls.io/github/scivision/NEXRADutils?branch=master)
-[![Build status](https://ci.appveyor.com/api/projects/status/dasnnsarbyankxqb?svg=true)](https://ci.appveyor.com/project/scivision/nexradutils)
-[![Maintainability](https://api.codeclimate.com/v1/badges/05529f213d77cfa3c1f2/maintainability)](https://codeclimate.com/github/scivision/NEXRADutils/maintainability)
-[![image](https://img.shields.io/pypi/pyversions/NEXRADutils.svg)](https://pypi.python.org/pypi/NEXRADutils)
-[![image](https://img.shields.io/pypi/format/NEXRADutils.svg)](https://pypi.python.org/pypi/NEXRADutils)
-
-[![PyPi Download stats](http://pepy.tech/badge/NEXRADutils)](http://pepy.tech/project/NEXRADutils)
-
-# NEXRAD utilities
+[![ci](https://github.com/space-physics/NEXRAD/actions/workflows/ci.yml/badge.svg)](https://github.com/space-physics/NEXRAD/actions/workflows/ci.yml)
+[![image](https://img.shields.io/pypi/pyversions/NEXRADutils.svg)](https://pypi.python.org/pypi/NEXRAD-quickplot)
+[![image](https://img.shields.io/pypi/format/NEXRADutils.svg)](https://pypi.python.org/pypi/NEXRAD-quickplot)
+[![PyPi Download stats](http://pepy.tech/badge/NEXRADutils)](http://pepy.tech/project/NEXRAD-quickplot)
 
 Easy Python download and plot NEXRAD N0Q compositive reflectivity.
 Uses RGB high resolution PNG images of North America.
 
 Tested with `pytest`, `flake8` and `mypy` type checking.
 
-## Install
 ```sh
 python -m pip install -e .
 ```
@@ -59,20 +53,19 @@ Attributes:
 
 `.lat` and `.lon` are vectors of geodetic latitude and longitude respectively, computed based on the `.wld` file corresponding to the images.
 
-
-
-
 ### Download NEXRAD data
 
 Get
 [NEXRAD reflectivity data](https://mesonet.agron.iastate.edu/docs/nexrad_composites/)
 with parallel download:
+
 ```sh
 download-nexrad start stop outdir
 ```
 
 example:
 download from 2018-01-01 to 2018-01-02 to `~/data/nexrad`:
+
 ```sh
 download-nexrad 2018-01-01T00 2018-01-03T00 ~/data/nexrad
 ```
@@ -110,6 +103,7 @@ same for wide time spans of data. The
 [.wld format](https://mesonet.agron.iastate.edu/docs/radmapserver/howto.html#toc3.3)
 is like:
 ```
+
 0.005 (size of pixel in x direction)
 0.0 (rotation of row) (Typically zero)
 0.0 (rotation of column) (Typically zero)
@@ -117,7 +111,6 @@ is like:
 -126.0 (x coordinate of centre of upper left pixel in map units--here it's WGS84 longitude)
 50.0 (y coordinate of centre of upper left pixel in map units--here it's WGS84 latitude)
 ```
-
 
 ### Mass image downscaling
 
@@ -136,5 +129,3 @@ If you have trouble with this being very slow, try:
 ```bash
 MAGICK_TEMPORARY_PATH=/run/shm nice mogrify -scale 10% "*.png"
 ```
-
-

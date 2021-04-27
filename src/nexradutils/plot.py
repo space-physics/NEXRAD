@@ -1,5 +1,6 @@
 from pathlib import Path
 import xarray
+from argparse import ArgumentParser
 import numpy as np
 import bisect
 import imageio
@@ -8,6 +9,8 @@ from typing import Dict, Any, Union, List, Optional
 from matplotlib.pyplot import figure, draw, fignum_exists, pause
 import matplotlib.ticker as mticker
 import matplotlib.dates as mdates
+from matplotlib.pyplot import show
+
 
 from . import load
 from .io import loadkeogram
@@ -123,9 +126,9 @@ def overlay2d(
     )
 
     if verbose:
-        for l in labels:
-            ax.plot(l[0], l[1], "bo", markersize=7, transform=GREF)
-            ax.annotate(l[2], xy=(l[0], l[1]), xytext=(3, 3), textcoords="offset points")
+        for lb in labels:
+            ax.plot(lb[0], lb[1], "bo", markersize=7, transform=GREF)
+            ax.annotate(lb[2], xy=(lb[0], lb[1]), xytext=(3, 3), textcoords="offset points")
 
     himg = ax.imshow(
         img,
@@ -148,13 +151,13 @@ def overlay2d(
     gl.yformatter = LATITUDE_FORMATTER
     # %% ticks
     if isinstance(lontick, (int, float)):
-        bisect.insort(LON_TICK, lontick)
+        bisect.insort(LON_TICK, lontick)  # type: ignore
         lontick = LON_TICK
     elif lontick is None:
         lontick = LON_TICK
 
     if isinstance(lattick, (int, float)):
-        bisect.insort(LAT_TICK, lattick)
+        bisect.insort(LAT_TICK, lattick)  # type: ignore
         lattick = LAT_TICK
     elif lattick is None:
         lattick = LAT_TICK
@@ -182,7 +185,7 @@ def keogram(keo: xarray.DataArray, ofn: Path = None, scalefn: Path = None):
     tlim = mdates.date2num(keo.time[[0, -1]].values)
 
     ax.imshow(
-        keo.values,
+        keo.data,
         origin="upper",
         aspect="auto",  # crucial for time-based imshow()
         extent=[tlim[0], tlim[1], keo.lon[0].item(), keo.lon[-1].item()],
@@ -270,3 +273,43 @@ def nexrad_loop(
             mlp = overlay2d(img, ofn, mlp, lattick=lattick, scalefn=scalefn)
             if not ofn:  # display only
                 pause(1)
+
+
+def main():
+    """
+    keogram example:
+    python plot-nexrad.py ~/data/2017-08-21/nexrad/ -keo lat 40 -odir ~/data/myplots
+
+    Plot stack example:
+    ./plot-nexrad.py ~/data/2017-08-21/nexrad/ -odir ~/data/2017-08-21/nexrad/plots -pat nexrad2017-08-21T14*.png
+
+    Panel subplot example:
+    ./plot-nexrad.py ~/data/2017-08-21/nexrad/nexrad2017-08-21T12:00:00.png \
+        ~/data/2017-08-21/nexrad/nexrad2017-08-21T12:30:00.png \
+        -odir ~/data/2017-08-21/nexrad/plots
+    """
+    p = ArgumentParser()
+    p.add_argument("datadir", help="directory of NEXRAD PNG data to read", nargs="+")
+    p.add_argument("-pat", help="file glob pattern", nargs="?", default="*.png")
+    p.add_argument("-wld", help=".wld filename")
+    p.add_argument(
+        "-keo", help="make keogram at lat/lon value", metavar=("lat/lon", "value"), nargs=2
+    )
+    p.add_argument(
+        "-lattick", help="specify specific latitude to have additional tick at", type=float
+    )
+    p.add_argument("-odir", help="save graphs to this directory")
+    p.add_argument("-q", "--quiet", help="no plots", action="store_true")
+    p.add_argument
+    P = p.parse_args()
+
+    SCALEFN = Path(__file__).parent / "doc" / "n0q_ramp.png"
+
+    genplots(P, SCALEFN)
+
+    if show is not None:
+        show()
+
+
+if __name__ == "__main__":
+    main()
